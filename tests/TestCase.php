@@ -22,7 +22,10 @@ abstract class TestCase extends Testbench
 
     protected function defineDatabaseMigrations()
     {
-        $this->loadMigrationsFrom(workbench_path('database/migrations'), );
+        $this->loadMigrationsFrom([
+            workbench_path('database/migrations'),
+            __DIR__ . '/../database/migrations',
+        ]);
     }
 
     protected function defineRoutes($router)
