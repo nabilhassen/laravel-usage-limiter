@@ -2,12 +2,14 @@
 
 namespace Nabilhassen\LaravelUsageLimiter\Tests;
 
+use function Orchestra\Testbench\workbench_path;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Nabilhassen\LaravelUsageLimiter\ServiceProvider;
 use Orchestra\Testbench\Concerns\WithWorkbench;
-use Orchestra\Testbench\TestCase as TestbenchTestCase;
+use Orchestra\Testbench\TestCase as Testbench;
+use Workbench\App\Http\Controllers\LocationController;
 
-abstract class TestCase extends TestbenchTestCase
+abstract class TestCase extends Testbench
 {
     use RefreshDatabase, WithWorkbench;
 
@@ -16,5 +18,15 @@ abstract class TestCase extends TestbenchTestCase
         return [
             ServiceProvider::class,
         ];
+    }
+
+    protected function defineDatabaseMigrations()
+    {
+        $this->loadMigrationsFrom(workbench_path('database/migrations'), );
+    }
+
+    protected function defineRoutes($router)
+    {
+        $router->resource('locations', LocationController::class)->only(['store', 'destroy']);
     }
 }

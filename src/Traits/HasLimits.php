@@ -36,7 +36,7 @@ trait HasLimits
 
     public function useLimit(string $limitName, float $amount = 1): bool
     {
-        $limit = Limit::findByName($limitName);
+        $limit = $this->limits()->firstWhere('name', $limitName);
 
         $newUsedAmount = $limit->pivot->used_amount + $amount;
 
@@ -57,7 +57,7 @@ trait HasLimits
 
     public function unuseLimit(string $limitName, float $amount = 1): bool
     {
-        $limit = Limit::findByName($limitName);
+        $limit = $this->limits()->firstWhere('name', $limitName);
 
         $newUsedAmount = $limit->pivot->used_amount - $amount;
 
@@ -85,7 +85,7 @@ trait HasLimits
 
     public function hasEnoughLimit(string $limitName): bool
     {
-        $limit = $this->limits()->where('name', $limitName)->first();
+        $limit = $this->limits()->firstWhere('name', $limitName);
 
         $usedAmount = $limit->pivot->used_amount;
 

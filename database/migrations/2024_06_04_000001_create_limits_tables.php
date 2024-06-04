@@ -8,18 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('limits', function (Blueprint $table) {
+        Schema::create('limits', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('plan')->nullable();
             $table->double('allowed_amount');
             $table->string('reset_frequency')->nullable();
+            $table->timestamps();
             $table->softDeletes();
 
             $table->unique(['name', 'plan']);
         });
 
-        Schema::table('limitables', function (Blueprint $table) {
+        Schema::create('limitables', function (Blueprint $table) {
             $table->id();
             $table->foreignId('limit_id')->nullable()->references('id')->on('limits')->cascadeOnDelete()->cascadeOnUpdate();
             $table->morphs('limitable');
