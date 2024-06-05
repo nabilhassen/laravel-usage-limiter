@@ -2,10 +2,10 @@
 
 namespace Workbench\App\Models;
 
-use Orchestra\Testbench\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Nabilhassen\LaravelUsageLimiter\Traits\HasLimits;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Orchestra\Testbench\Factories\UserFactory;
 
 class User extends AuthUser
 {
