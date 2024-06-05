@@ -1,0 +1,218 @@
+<?php
+
+namespace Nabilhassen\LaravelUsageLimiter\Tests\Feature;
+
+use Exception;
+use Illuminate\Support\Str;
+use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitDoesNotExist;
+use Nabilhassen\LaravelUsageLimiter\Models\Limit;
+use Nabilhassen\LaravelUsageLimiter\Tests\TestCase;
+
+class LimitTest extends TestCase
+{
+    public function test_execption_is_thrown_if_limit_name_is_not_present(): void
+    {
+        $data = [
+            'plan' => 'standard',
+            'allowed_amount' => 5,
+        ];
+
+        $this->assertThrows(
+            fn() => Limit::findOrCreate($data),
+            Exception::class
+        );
+    }
+
+    public function test_execption_is_thrown_if_allowed_amount_is_not_present(): void
+    {
+        $data = [
+            'name' => 'locations',
+            'plan' => 'standard',
+        ];
+
+        $this->assertThrows(
+            fn() => Limit::findOrCreate($data),
+            Exception::class
+        );
+    }
+
+    public function test_execption_is_thrown_if_allowed_amount_is_less_than_zero(): void
+    {
+        $data = [
+            'name' => 'locations',
+            'plan' => 'standard',
+            'allowed_amount' => random_int(PHP_INT_MIN, -0.1),
+        ];
+
+        $this->assertThrows(
+            fn() => Limit::findOrCreate($data),
+            Exception::class
+        );
+    }
+
+    public function test_limit_can_be_created(): void
+    {
+        $data = [
+            'name' => 'locations',
+            'plan' => 'standard',
+            'allowed_amount' => 5,
+        ];
+
+        $limit = Limit::findOrCreate($data);
+
+        $this->assertDatabaseHas($limit, $data);
+    }
+
+    public function test_duplicate_limit_cannot_be_created(): void
+    {
+        $data = [
+            'name' => 'locations',
+            'plan' => 'standard',
+            'allowed_amount' => 5,
+        ];
+
+        $firstLimit = Limit::findOrCreate($data);
+
+        $secondLimit = Limit::findOrCreate($data);
+
+        $this->assertEquals($firstLimit->id, $secondLimit->id);
+    }
+
+    public function test_same_limit_name_but_different_plan_can_be_created(): void
+    {
+        $data = [
+            'name' => 'locations',
+            'plan' => 'standard',
+            'allowed_amount' => 5,
+        ];
+
+        $firstLimit = Limit::findOrCreate($data);
+
+        $data['plan'] = 'pro';
+
+        $secondLimit = Limit::findOrCreate($data);
+
+        $this->assertDatabaseCount(Limit::class, 2);
+
+        $this->assertModelExists($firstLimit);
+
+        $this->assertModelExists($secondLimit);
+    }
+
+    public function test_exception_is_thrown_if_limit_does_not_exist(): void
+    {
+        $this->assertThrows(
+            fn() => Limit::findByName(Str::random()),
+            LimitDoesNotExist::class
+        );
+    }
+
+    public function test_existing_limit_can_be_retrieved(): void
+    {
+        $data = [
+            'name' => 'locations',
+            'plan' => 'standard',
+            'allowed_amount' => 5,
+        ];
+
+        $limit = Limit::findOrCreate($data);
+
+        $this->assertEquals(
+            $limit->id,
+            Limit::findByName($limit->name, $limit->plan)->id
+        );
+    }
+
+    public function test_same_limit_name_but_different_plan_can_be_retrieved(): void
+    {
+        $data = [
+            'name' => 'locations',
+            'plan' => 'standard',
+            'allowed_amount' => 5,
+        ];
+
+        $firstLimit = Limit::findOrCreate($data);
+
+        $data['plan'] = 'pro';
+
+        $secondLimit = Limit::findOrCreate($data);
+
+        $this->assertEquals(
+            $firstLimit->id,
+            Limit::findByName($firstLimit->name, $firstLimit->plan)->id
+        );
+
+        $this->assertEquals(
+            $secondLimit->id,
+            Limit::findByName($secondLimit->name, $secondLimit->plan)->id
+        );
+    }
+
+    public function test_exception_is_thrown_when_incrementing_existing_limit_by_zero_or_less(): void
+    {
+        $data = [
+            'name' => 'locations',
+            'plan' => 'standard',
+            'allowed_amount' => 5,
+        ];
+
+        $limit = Limit::findOrCreate($data);
+
+        $this->assertThrows(
+            fn() => $limit->incrementBy(0),
+            Exception::class
+        );
+    }
+
+    public function test_existing_limit_allowed_amount_can_be_incremented(): void
+    {
+        $data = [
+            'name' => 'locations',
+            'plan' => 'standard',
+            'allowed_amount' => 5,
+        ];
+
+        $limit = Limit::findOrCreate($data);
+
+        $limit->incrementBy(3);
+
+        $this->assertEquals(
+            8,
+            Limit::findByName($limit->name, $limit->plan)->allowed_amount
+        );
+    }
+
+    public function test_exception_is_thrown_when_decrementing_existing_limit_to_zero_or_less(): void
+    {
+        $data = [
+            'name' => 'locations',
+            'plan' => 'standard',
+            'allowed_amount' => 5,
+        ];
+
+        $limit = Limit::findOrCreate($data);
+
+        $this->assertThrows(
+            fn() => $limit->decrementBy(6),
+            Exception::class
+        );
+    }
+
+    public function test_existing_limit_allowed_amount_can_be_decremented(): void
+    {
+        $data = [
+            'name' => 'locations',
+            'plan' => 'standard',
+            'allowed_amount' => 5,
+        ];
+
+        $limit = Limit::findOrCreate($data);
+
+        $limit->decrementBy(3);
+
+        $this->assertEquals(
+            2,
+            Limit::findByName($limit->name, $limit->plan)->allowed_amount
+        );
+    }
+}

@@ -1,5 +1,7 @@
 <?php
 
+namespace Nabilhassen\LaravelUsageLimiter\Tests\Feature;
+
 use Nabilhassen\LaravelUsageLimiter\Models\Limit;
 use Nabilhassen\LaravelUsageLimiter\Tests\TestCase;
 use Workbench\App\Models\Location;

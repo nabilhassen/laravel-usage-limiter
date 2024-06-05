@@ -2,6 +2,7 @@
 
 namespace Nabilhassen\LaravelUsageLimiter\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
@@ -54,11 +55,20 @@ class Limit extends Model implements ContractsLimit
 
     public static function incrementLimit(string $name, string $plan, float $amount = 1): bool
     {
+        if ($amount <= 0) {
+            throw new Exception('"allowed_amount" should be greater than 0.');
+        }
+
         $limit = static::findByName($name, $plan);
 
         $limit->allowed_amount += $amount;
 
         return $limit->save();
+    }
+
+    public function incrementBy(float $amount = 1): bool
+    {
+        return static::incrementLimit($this->name, $this->plan, $amount);
     }
 
     public static function decrementLimit(string $name, string $plan, float $amount = 1): bool
@@ -67,7 +77,16 @@ class Limit extends Model implements ContractsLimit
 
         $limit->allowed_amount -= $amount;
 
+        if ($limit->allowed_amount < 0) {
+            throw new Exception('"allowed_amount" should be greater than or equal to 0.');
+        }
+
         return $limit->save();
+    }
+
+    public function decrementBy(float $amount = 1): bool
+    {
+        return static::decrementLimit($this->name, $this->plan, $amount);
     }
 
     public static function usageReport(): Collection
