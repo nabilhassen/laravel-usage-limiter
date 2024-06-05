@@ -27,9 +27,4 @@ abstract class TestCase extends Testbench
             __DIR__ . '/../database/migrations',
         ]);
     }
-
-    protected function defineRoutes($router)
-    {
-        $router->resource('locations', LocationController::class)->only(['store', 'destroy']);
-    }
 }
