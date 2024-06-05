@@ -2,6 +2,7 @@
 
 namespace Nabilhassen\LaravelUsageLimiter\Traits;
 
+use Exception;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Nabilhassen\LaravelUsageLimiter\Models\Limit;
 
@@ -20,6 +21,10 @@ trait HasLimits
 
         $limit = Limit::findByName($name, $plan);
 
+        if ($usedAmount > $limit->allowed_amount) {
+            throw new Exception('"used_amount" should always be less than or equal to the limit "allowed_amount"');
+        }
+
         $this->limits()->sync([
             $limit->id => [
                 'used_amount' => $usedAmount,
@@ -29,7 +34,7 @@ trait HasLimits
         return true;
     }
 
-    private function isLimitSet(string $name): bool
+    public function isLimitSet(string $name): bool
     {
         return $this->limits()->where('name', $name)->exists();
     }
@@ -111,5 +116,19 @@ trait HasLimits
         $limit = Limit::findByName($name);
 
         return $usedAmount >= 0 && $usedAmount <= $limit->allowed_amount;
+    }
+
+    public function usedLimit(string $name): float
+    {
+        $limit = $this->limits()->firstWhere('name', $name);
+
+        return $limit->pivot->used_amount;
+    }
+
+    public function remainingLimit(string $name): float
+    {
+        $limit = $this->limits()->firstWhere('name', $name);
+
+        return $limit->allowed_amount - $limit->pivot->used_amount;
     }
 }
