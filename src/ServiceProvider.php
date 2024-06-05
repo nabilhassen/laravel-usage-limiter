@@ -15,8 +15,19 @@ class ServiceProvider extends SupportServiceProvider
 
     public function boot(): void
     {
-        $this->publishesMigrations([
-            __DIR__ . '/../database/migrations' => database_path('migrations'),
-        ]);
+        $this->publishMigration();
+    }
+
+    protected function publishMigration(): void
+    {
+        if ($this->app->version() >= 11) {
+            $this->publishesMigrations([
+                __DIR__ . '/../database/migrations' => database_path('migrations'),
+            ]);
+        }
+
+        if ($this->app->version() < 11) {
+            $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        }
     }
 }

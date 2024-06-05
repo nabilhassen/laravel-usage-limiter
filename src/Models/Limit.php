@@ -26,7 +26,10 @@ class Limit extends Model implements ContractsLimit
             throw new Exception('"allowed_amount" should be greater than or equal to 0.');
         }
 
-        $limit = static::firstWhere('name', $data['name']);
+        $limit = static::query()
+            ->where('name', $data['name'])
+            ->when(isset($data['plan']), fn($q) => $q->where('plan', $data['plan']))
+            ->first();
 
         if (!$limit) {
             return static::query()->create($data);
@@ -35,9 +38,12 @@ class Limit extends Model implements ContractsLimit
         return $limit;
     }
 
-    public static function findByName(string $name): ContractsLimit
+    public static function findByName(string $name, ?string $plan = null): ContractsLimit
     {
-        $limit = static::firstWhere('name', $name);
+        $limit = static::query()
+            ->where('name', $name)
+            ->when(!is_null($plan), fn($q) => $q->where('plan', $plan))
+            ->first();
 
         if (!$limit) {
             throw new LimitDoesNotExist($name);
@@ -46,18 +52,18 @@ class Limit extends Model implements ContractsLimit
         return $limit;
     }
 
-    public static function incrementLimit(string $name, float $amount = 1): bool
+    public static function incrementLimit(string $name, string $plan, float $amount = 1): bool
     {
-        $limit = static::findByName($name);
+        $limit = static::findByName($name, $plan);
 
         $limit->allowed_amount += $amount;
 
         return $limit->save();
     }
 
-    public static function decrementLimit(string $name, float $amount = 1): bool
+    public static function decrementLimit(string $name, string $plan, float $amount = 1): bool
     {
-        $limit = static::findByName($name);
+        $limit = static::findByName($name, $plan);
 
         $limit->allowed_amount -= $amount;
 

@@ -37,7 +37,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Nabilhassen\\LaravelUsageLimiter\\Tests\\": "tests",
+            "Nabilhassen\\LaravelUsageLimiter\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/"
         }
     },

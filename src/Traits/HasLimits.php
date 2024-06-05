@@ -12,9 +12,13 @@ trait HasLimits
         return $this->morphToMany(Limit::class, 'limitable')->withPivot(['used_amount']);
     }
 
-    public function setLimit(string $limitName, float $usedAmount = 0): bool
+    public function setLimit(string $name, string $plan = null, float $usedAmount = 0): bool
     {
-        $limit = Limit::findByName($limitName);
+        if ($this->isLimitSet($name)) {
+            return true;
+        }
+
+        $limit = Limit::findByName($name, $plan);
 
         $this->limits()->sync([
             $limit->id => [
@@ -25,26 +29,31 @@ trait HasLimits
         return true;
     }
 
-    public function unsetLimit(string $limitName): bool
+    private function isLimitSet(string $name): bool
     {
-        $limit = Limit::findByName($limitName);
+        return $this->limits()->where('name', $name)->exists();
+    }
+
+    public function unsetLimit(string $name): bool
+    {
+        $limit = Limit::findByName($name);
 
         $this->limits()->detach($limit->id);
 
         return true;
     }
 
-    public function useLimit(string $limitName, float $amount = 1): bool
+    public function useLimit(string $name, float $amount = 1): bool
     {
-        $limit = $this->limits()->firstWhere('name', $limitName);
+        $limit = $this->limits()->firstWhere('name', $name);
 
         $newUsedAmount = $limit->pivot->used_amount + $amount;
 
-        if (!$this->hasEnoughLimit($limitName)) {
+        if (!$this->hasEnoughLimit($name)) {
             return false;
         }
 
-        if (!$this->ensureUsedAmountIsLessThanAllowedAmount($limitName, $newUsedAmount)) {
+        if (!$this->ensureUsedAmountIsLessThanAllowedAmount($name, $newUsedAmount)) {
             return false;
         }
 
@@ -55,13 +64,13 @@ trait HasLimits
         return true;
     }
 
-    public function unuseLimit(string $limitName, float $amount = 1): bool
+    public function unuseLimit(string $name, float $amount = 1): bool
     {
-        $limit = $this->limits()->firstWhere('name', $limitName);
+        $limit = $this->limits()->firstWhere('name', $name);
 
         $newUsedAmount = $limit->pivot->used_amount - $amount;
 
-        if (!$this->ensureUsedAmountIsLessThanAllowedAmount($limitName, $newUsedAmount)) {
+        if (!$this->ensureUsedAmountIsLessThanAllowedAmount($name, $newUsedAmount)) {
             return false;
         }
 
@@ -72,9 +81,9 @@ trait HasLimits
         return true;
     }
 
-    public function resetLimit(string $limitName): bool
+    public function resetLimit(string $name): bool
     {
-        $limit = Limit::findByName($limitName);
+        $limit = Limit::findByName($name);
 
         $this->limits()->syncWithoutDetaching([
             $limit->id => ['used_amount' => 0],
@@ -83,23 +92,23 @@ trait HasLimits
         return true;
     }
 
-    public function hasEnoughLimit(string $limitName): bool
+    public function hasEnoughLimit(string $name): bool
     {
-        $limit = $this->limits()->firstWhere('name', $limitName);
+        $limit = $this->limits()->firstWhere('name', $name);
 
         $usedAmount = $limit->pivot->used_amount;
 
         return $limit->allowed_amount > $usedAmount;
     }
 
-    public function doesntHaveEnoughLimit(string $limitName): bool
+    public function doesntHaveEnoughLimit(string $name): bool
     {
-        return !$this->hasEnoughLimit($limitName);
+        return !$this->hasEnoughLimit($name);
     }
 
-    public function ensureUsedAmountIsLessThanAllowedAmount(string $limitName, float $usedAmount): bool
+    public function ensureUsedAmountIsLessThanAllowedAmount(string $name, float $usedAmount): bool
     {
-        $limit = Limit::findByName($limitName);
+        $limit = Limit::findByName($name);
 
         return $usedAmount >= 0 && $usedAmount <= $limit->allowed_amount;
     }
