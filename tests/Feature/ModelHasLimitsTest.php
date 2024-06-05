@@ -3,6 +3,7 @@
 namespace Nabilhassen\LaravelUsageLimiter\Tests\Feature;
 
 use Exception;
+use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitNotSetOnModel;
 use Nabilhassen\LaravelUsageLimiter\Models\Limit;
 use Nabilhassen\LaravelUsageLimiter\Tests\TestCase;
 use Workbench\App\Models\User;
@@ -183,6 +184,29 @@ class ModelHasLimitsTest extends TestCase
         $user->useLimit($limit->name, 2);
 
         $this->assertEquals(3, $user->remainingLimit($limit->name));
+    }
+
+    public function test_exception_is_thrown_if_limit_is_not_set_on_a_model(): void
+    {
+        $user = User::factory()->create();
+
+        $limit = $this->createLimit();
+
+        $this->assertThrows(
+            fn() => $user->getLimit($limit->name),
+            LimitNotSetOnModel::class
+        );
+    }
+
+    public function test_retrieving_limit_set_on_a_model(): void
+    {
+        $user = User::factory()->create();
+
+        $limit = $this->createLimit();
+
+        $user->setLimit($limit->name);
+
+        $this->assertEquals($limit->id, $user->getLimit($limit->name)->id);
     }
 
     protected function createLimit(string $name = 'locations', string $plan = 'standard', float $allowedAmount = 5): Limit

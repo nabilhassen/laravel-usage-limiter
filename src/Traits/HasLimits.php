@@ -4,6 +4,7 @@ namespace Nabilhassen\LaravelUsageLimiter\Traits;
 
 use Exception;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitNotSetOnModel;
 use Nabilhassen\LaravelUsageLimiter\Models\Limit;
 
 trait HasLimits
@@ -50,7 +51,7 @@ trait HasLimits
 
     public function useLimit(string $name, float $amount = 1): bool
     {
-        $limit = $this->limits()->firstWhere('name', $name);
+        $limit = $this->getLimit($name);
 
         $newUsedAmount = $limit->pivot->used_amount + $amount;
 
@@ -71,7 +72,7 @@ trait HasLimits
 
     public function unuseLimit(string $name, float $amount = 1): bool
     {
-        $limit = $this->limits()->firstWhere('name', $name);
+        $limit = $this->getLimit($name);
 
         $newUsedAmount = $limit->pivot->used_amount - $amount;
 
@@ -99,7 +100,7 @@ trait HasLimits
 
     public function hasEnoughLimit(string $name): bool
     {
-        $limit = $this->limits()->firstWhere('name', $name);
+        $limit = $this->getLimit($name);
 
         $usedAmount = $limit->pivot->used_amount;
 
@@ -120,15 +121,26 @@ trait HasLimits
 
     public function usedLimit(string $name): float
     {
-        $limit = $this->limits()->firstWhere('name', $name);
+        $limit = $this->getLimit($name);
 
         return $limit->pivot->used_amount;
     }
 
     public function remainingLimit(string $name): float
     {
-        $limit = $this->limits()->firstWhere('name', $name);
+        $limit = $this->getLimit($name);
 
         return $limit->allowed_amount - $limit->pivot->used_amount;
+    }
+
+    public function getLimit(string $name): Limit
+    {
+        $limit = $this->limits()->firstWhere('name', $name);
+
+        if (!$limit) {
+            throw new LimitNotSetOnModel($name);
+        }
+
+        return $limit;
     }
 }
