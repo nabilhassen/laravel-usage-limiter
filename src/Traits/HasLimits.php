@@ -4,6 +4,7 @@ namespace Nabilhassen\LaravelUsageLimiter\Traits;
 
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use InvalidArgumentException;
+use Nabilhassen\LaravelUsageLimiter\Contracts\Limit as ContractsLimit;
 use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitNotSetOnModel;
 use Nabilhassen\LaravelUsageLimiter\Models\Limit;
 
@@ -14,13 +15,13 @@ trait HasLimits
         return $this->morphToMany(Limit::class, 'limitable')->withPivot(['used_amount']);
     }
 
-    public function setLimit(string $name, string $plan = null, float $usedAmount = 0): bool
+    public function setLimit(string|ContractsLimit $name, string $plan = null, float $usedAmount = 0): bool
     {
-        if ($this->isLimitSet($name)) {
+        $limit = $this->getLimit($name, $plan);
+
+        if ($this->isLimitSet($limit)) {
             return true;
         }
-
-        $limit = Limit::findByName($name, $plan);
 
         if ($usedAmount > $limit->allowed_amount) {
             throw new InvalidArgumentException('"used_amount" should always be less than or equal to the limit "allowed_amount"');
@@ -35,23 +36,25 @@ trait HasLimits
         return true;
     }
 
-    public function isLimitSet(string $name): bool
+    public function isLimitSet(string|ContractsLimit $name): bool
     {
-        return $this->limits()->where('name', $name)->exists();
+        $limit = $this->getLimit($name);
+
+        return $this->limits()->where('name', $limit->name)->exists();
     }
 
-    public function unsetLimit(string $name): bool
+    public function unsetLimit(string|ContractsLimit $name): bool
     {
-        $limit = Limit::findByName($name);
+        $limit = $this->getLimit($name);
 
         $this->limits()->detach($limit->id);
 
         return true;
     }
 
-    public function useLimit(string $name, float $amount = 1): bool
+    public function useLimit(string|ContractsLimit $name, float $amount = 1): bool
     {
-        $limit = $this->getLimit($name);
+        $limit = $this->getModelLimit($name);
 
         $newUsedAmount = $limit->pivot->used_amount + $amount;
 
@@ -70,9 +73,9 @@ trait HasLimits
         return true;
     }
 
-    public function unuseLimit(string $name, float $amount = 1): bool
+    public function unuseLimit(string|ContractsLimit $name, float $amount = 1): bool
     {
-        $limit = $this->getLimit($name);
+        $limit = $this->getModelLimit($name);
 
         $newUsedAmount = $limit->pivot->used_amount - $amount;
 
@@ -87,9 +90,9 @@ trait HasLimits
         return true;
     }
 
-    public function resetLimit(string $name): bool
+    public function resetLimit(string|ContractsLimit $name): bool
     {
-        $limit = Limit::findByName($name);
+        $limit = $this->getLimit($name);
 
         $this->limits()->syncWithoutDetaching([
             $limit->id => ['used_amount' => 0],
@@ -98,49 +101,51 @@ trait HasLimits
         return true;
     }
 
-    public function hasEnoughLimit(string $name): bool
+    public function hasEnoughLimit(string|ContractsLimit $name): bool
     {
-        $limit = $this->getLimit($name);
+        $limit = $this->getModelLimit($name);
 
         $usedAmount = $limit->pivot->used_amount;
 
         return $limit->allowed_amount > $usedAmount;
     }
 
-    public function doesntHaveEnoughLimit(string $name): bool
+    public function ensureUsedAmountIsLessThanAllowedAmount(string|ContractsLimit $name, float $usedAmount): bool
     {
-        return !$this->hasEnoughLimit($name);
-    }
-
-    public function ensureUsedAmountIsLessThanAllowedAmount(string $name, float $usedAmount): bool
-    {
-        $limit = Limit::findByName($name);
+        $limit = $this->getLimit($name);
 
         return $usedAmount >= 0 && $usedAmount <= $limit->allowed_amount;
     }
 
-    public function usedLimit(string $name): float
+    public function usedLimit(string|ContractsLimit $name): float
     {
-        $limit = $this->getLimit($name);
+        $limit = $this->getModelLimit($name);
 
         return $limit->pivot->used_amount;
     }
 
-    public function remainingLimit(string $name): float
+    public function remainingLimit(string|ContractsLimit $name): float
     {
-        $limit = $this->getLimit($name);
+        $limit = $this->getModelLimit($name);
 
         return $limit->allowed_amount - $limit->pivot->used_amount;
     }
 
-    public function getLimit(string $name): Limit
+    public function getModelLimit(string|ContractsLimit $name): ContractsLimit|Limit
     {
-        $limit = $this->limits()->firstWhere('name', $name);
+        $limit = $this->getLimit($name);
 
-        if (!$limit) {
+        $modelLimit = $this->limits()->firstWhere('name', $limit->name);
+
+        if (!$modelLimit) {
             throw new LimitNotSetOnModel($name);
         }
 
-        return $limit;
+        return $modelLimit;
+    }
+
+    public function getLimit(string|ContractsLimit $name, ?string $plan = null): ContractsLimit
+    {
+        return is_string($name) ? Limit::findByName($name, $plan) : $name;
     }
 }

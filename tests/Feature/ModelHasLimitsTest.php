@@ -2,6 +2,7 @@
 
 namespace Nabilhassen\LaravelUsageLimiter\Tests\Feature;
 
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use InvalidArgumentException;
 use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitNotSetOnModel;
 use Nabilhassen\LaravelUsageLimiter\Models\Limit;
@@ -10,6 +11,13 @@ use Workbench\App\Models\User;
 
 class ModelHasLimitsTest extends TestCase
 {
+    public function test_model_has_relationship_with_limit(): void
+    {
+        $user = User::factory()->create();
+
+        $this->assertInstanceOf(MorphToMany::class, $user->limits());
+    }
+
     public function test_cannot_set_limit_with_same_name_but_different_plan(): void
     {
         $user = User::factory()->create();
@@ -193,12 +201,23 @@ class ModelHasLimitsTest extends TestCase
         $limit = $this->createLimit();
 
         $this->assertException(
-            fn() => $user->getLimit($limit->name),
+            fn() => $user->getModelLimit($limit->name),
             LimitNotSetOnModel::class
         );
     }
 
     public function test_retrieving_limit_set_on_a_model(): void
+    {
+        $user = User::factory()->create();
+
+        $limit = $this->createLimit();
+
+        $user->setLimit($limit->name);
+
+        $this->assertEquals($limit->id, $user->getModelLimit($limit->name)->id);
+    }
+
+    public function test_retrieving_limit(): void
     {
         $user = User::factory()->create();
 
