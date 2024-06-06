@@ -206,7 +206,7 @@ class ModelHasLimitsTest extends TestCase
         );
     }
 
-    public function test_retrieving_limit_set_on_a_model(): void
+    public function test_retrieving_limit_set_on_a_model_by_limit_name(): void
     {
         $user = User::factory()->create();
 
@@ -217,7 +217,18 @@ class ModelHasLimitsTest extends TestCase
         $this->assertEquals($limit->id, $user->getModelLimit($limit->name)->id);
     }
 
-    public function test_retrieving_limit(): void
+    public function test_retrieving_limit_set_on_a_model_by_limit_object(): void
+    {
+        $user = User::factory()->create();
+
+        $limit = $this->createLimit();
+
+        $user->setLimit($limit->name);
+
+        $this->assertEquals($limit->id, $user->getModelLimit($limit)->id);
+    }
+
+    public function test_retrieving_limit_by_limit_name(): void
     {
         $user = User::factory()->create();
 
@@ -226,6 +237,17 @@ class ModelHasLimitsTest extends TestCase
         $user->setLimit($limit->name);
 
         $this->assertEquals($limit->id, $user->getLimit($limit->name)->id);
+    }
+
+    public function test_retrieving_limit_by_limit_object(): void
+    {
+        $user = User::factory()->create();
+
+        $limit = $this->createLimit();
+
+        $user->setLimit($limit->name);
+
+        $this->assertEquals($limit->id, $user->getLimit($limit)->id);
     }
 
     protected function createLimit(string $name = 'locations', string $plan = 'standard', float $allowedAmount = 5): Limit
