@@ -97,6 +97,8 @@ class LimitTest extends TestCase
         $this->assertModelExists($firstLimit);
 
         $this->assertModelExists($secondLimit);
+
+        $this->assertNotEquals($firstLimit->id, $secondLimit->id);
     }
 
     public function test_exception_is_thrown_if_limit_does_not_exist(): void
@@ -107,7 +109,7 @@ class LimitTest extends TestCase
         );
     }
 
-    public function test_existing_limit_can_be_retrieved(): void
+    public function test_existing_limit_can_be_retrieved_by_name(): void
     {
         $data = [
             'name' => 'locations',
@@ -123,7 +125,7 @@ class LimitTest extends TestCase
         );
     }
 
-    public function test_same_limit_name_but_different_plan_can_be_retrieved(): void
+    public function test_same_limit_name_but_different_plan_can_be_retrieved_by_name_and_plan(): void
     {
         $data = [
             'name' => 'locations',
@@ -148,7 +150,7 @@ class LimitTest extends TestCase
         );
     }
 
-    public function test_exception_is_thrown_non_existing_limit_is_retrieved_by_id(): void
+    public function test_exception_is_thrown_when_non_existing_limit_is_retrieved_by_id(): void
     {
         $data = [
             'name' => 'locations',
