@@ -2,12 +2,12 @@
 
 namespace Nabilhassen\LaravelUsageLimiter\Tests;
 
+use Closure;
 use function Orchestra\Testbench\workbench_path;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Nabilhassen\LaravelUsageLimiter\ServiceProvider;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as Testbench;
-use Workbench\App\Http\Controllers\LocationController;
 
 abstract class TestCase extends Testbench
 {
@@ -26,5 +26,12 @@ abstract class TestCase extends Testbench
             workbench_path('database/migrations'),
             __DIR__ . '/../database/migrations',
         ]);
+    }
+
+    public function assertException(Closure $test, string $exception): void
+    {
+        $this->expectException($exception);
+
+        $test();
     }
 }

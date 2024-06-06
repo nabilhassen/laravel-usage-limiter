@@ -2,8 +2,8 @@
 
 namespace Nabilhassen\LaravelUsageLimiter\Traits;
 
-use Exception;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use InvalidArgumentException;
 use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitNotSetOnModel;
 use Nabilhassen\LaravelUsageLimiter\Models\Limit;
 
@@ -23,7 +23,7 @@ trait HasLimits
         $limit = Limit::findByName($name, $plan);
 
         if ($usedAmount > $limit->allowed_amount) {
-            throw new Exception('"used_amount" should always be less than or equal to the limit "allowed_amount"');
+            throw new InvalidArgumentException('"used_amount" should always be less than or equal to the limit "allowed_amount"');
         }
 
         $this->limits()->sync([

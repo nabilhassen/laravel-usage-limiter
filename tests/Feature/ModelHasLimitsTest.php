@@ -2,7 +2,7 @@
 
 namespace Nabilhassen\LaravelUsageLimiter\Tests\Feature;
 
-use Exception;
+use InvalidArgumentException;
 use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitNotSetOnModel;
 use Nabilhassen\LaravelUsageLimiter\Models\Limit;
 use Nabilhassen\LaravelUsageLimiter\Tests\TestCase;
@@ -33,9 +33,9 @@ class ModelHasLimitsTest extends TestCase
 
         $limit = $this->createLimit();
 
-        $this->assertThrows(
+        $this->assertException(
             fn() => $user->setLimit($limit->name, usedAmount: 6),
-            Exception::class
+            InvalidArgumentException::class
         );
     }
 
@@ -192,7 +192,7 @@ class ModelHasLimitsTest extends TestCase
 
         $limit = $this->createLimit();
 
-        $this->assertThrows(
+        $this->assertException(
             fn() => $user->getLimit($limit->name),
             LimitNotSetOnModel::class
         );

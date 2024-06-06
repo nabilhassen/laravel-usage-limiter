@@ -2,8 +2,8 @@
 
 namespace Nabilhassen\LaravelUsageLimiter\Tests\Feature;
 
-use Exception;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitDoesNotExist;
 use Nabilhassen\LaravelUsageLimiter\Models\Limit;
 use Nabilhassen\LaravelUsageLimiter\Tests\TestCase;
@@ -17,9 +17,9 @@ class LimitTest extends TestCase
             'allowed_amount' => 5,
         ];
 
-        $this->assertThrows(
+        $this->assertException(
             fn() => Limit::findOrCreate($data),
-            Exception::class
+            InvalidArgumentException::class
         );
     }
 
@@ -30,9 +30,9 @@ class LimitTest extends TestCase
             'plan' => 'standard',
         ];
 
-        $this->assertThrows(
+        $this->assertException(
             fn() => Limit::findOrCreate($data),
-            Exception::class
+            InvalidArgumentException::class
         );
     }
 
@@ -44,9 +44,9 @@ class LimitTest extends TestCase
             'allowed_amount' => random_int(PHP_INT_MIN, -0.1),
         ];
 
-        $this->assertThrows(
+        $this->assertException(
             fn() => Limit::findOrCreate($data),
-            Exception::class
+            InvalidArgumentException::class
         );
     }
 
@@ -101,7 +101,7 @@ class LimitTest extends TestCase
 
     public function test_exception_is_thrown_if_limit_does_not_exist(): void
     {
-        $this->assertThrows(
+        $this->assertException(
             fn() => Limit::findByName(Str::random()),
             LimitDoesNotExist::class
         );
@@ -158,9 +158,9 @@ class LimitTest extends TestCase
 
         $limit = Limit::findOrCreate($data);
 
-        $this->assertThrows(
+        $this->assertException(
             fn() => $limit->incrementBy(0),
-            Exception::class
+            InvalidArgumentException::class
         );
     }
 
@@ -192,9 +192,9 @@ class LimitTest extends TestCase
 
         $limit = Limit::findOrCreate($data);
 
-        $this->assertThrows(
+        $this->assertException(
             fn() => $limit->decrementBy(6),
-            Exception::class
+            InvalidArgumentException::class
         );
     }
 

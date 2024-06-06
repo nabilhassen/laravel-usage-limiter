@@ -2,11 +2,11 @@
 
 namespace Nabilhassen\LaravelUsageLimiter\Models;
 
-use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use InvalidArgumentException;
 use Nabilhassen\LaravelUsageLimiter\Contracts\Limit as ContractsLimit;
 use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitDoesNotExist;
 use Nabilhassen\LaravelUsageLimiter\Traits\RefreshCache;
@@ -20,11 +20,11 @@ class Limit extends Model implements ContractsLimit
     public static function findOrCreate(array $data): ContractsLimit
     {
         if (!Arr::has($data, ['name', 'allowed_amount'])) {
-            throw new Exception('"name" and "allowed_amount" keys do not exist.');
+            throw new InvalidArgumentException('"name" and "allowed_amount" keys do not exist on the array.');
         }
 
         if ($data['allowed_amount'] < 0) {
-            throw new Exception('"allowed_amount" should be greater than or equal to 0.');
+            throw new InvalidArgumentException('"allowed_amount" should be greater than or equal to 0.');
         }
 
         $limit = static::query()
@@ -56,7 +56,7 @@ class Limit extends Model implements ContractsLimit
     public static function incrementLimit(string $name, string $plan, float $amount = 1): bool
     {
         if ($amount <= 0) {
-            throw new Exception('"allowed_amount" should be greater than 0.');
+            throw new InvalidArgumentException('"amount" should be greater than 0.');
         }
 
         $limit = static::findByName($name, $plan);
@@ -78,7 +78,7 @@ class Limit extends Model implements ContractsLimit
         $limit->allowed_amount -= $amount;
 
         if ($limit->allowed_amount < 0) {
-            throw new Exception('"allowed_amount" should be greater than or equal to 0.');
+            throw new InvalidArgumentException('"allowed_amount" should be greater than or equal to 0.');
         }
 
         return $limit->save();
