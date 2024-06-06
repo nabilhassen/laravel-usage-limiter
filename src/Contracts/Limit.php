@@ -10,9 +10,11 @@ interface Limit
 
     public static function findByName(string $name, ?string $plan): self;
 
-    public static function incrementLimit(string $name, string $plan, float $amount = 1): bool;
+    public static function findById(int $id): self;
 
-    public static function decrementLimit(string $name, string $plan, float $amount = 1): bool;
+    public function incrementBy(float $amount = 1): bool;
+
+    public function decrementBy(float $amount = 1): bool;
 
     public static function usageReport(): Collection;
 }

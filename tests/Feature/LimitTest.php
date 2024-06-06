@@ -148,6 +148,36 @@ class LimitTest extends TestCase
         );
     }
 
+    public function test_exception_is_thrown_non_existing_limit_is_retrieved_by_id(): void
+    {
+        $data = [
+            'name' => 'locations',
+            'plan' => 'standard',
+            'allowed_amount' => 5,
+        ];
+
+        $this->assertException(
+            fn() => Limit::findById(1),
+            LimitDoesNotExist::class
+        );
+    }
+
+    public function test_limit_can_be_retrieved_by_id(): void
+    {
+        $data = [
+            'name' => 'locations',
+            'plan' => 'standard',
+            'allowed_amount' => 5,
+        ];
+
+        $limit = Limit::findOrCreate($data);
+
+        $this->assertEquals(
+            $limit->id,
+            Limit::findById($limit->id)->id
+        );
+    }
+
     public function test_exception_is_thrown_when_incrementing_existing_limit_by_zero_or_less(): void
     {
         $data = [

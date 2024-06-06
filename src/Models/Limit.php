@@ -17,7 +17,7 @@ class Limit extends Model implements ContractsLimit
 
     protected $guarded = ['id', 'created_at', 'updated_at', 'deleted_at'];
 
-    public static function findOrCreate(array $data): ContractsLimit
+    public static function findOrCreate(array $data): Limit
     {
         if (!Arr::has($data, ['name', 'allowed_amount'])) {
             throw new InvalidArgumentException('"name" and "allowed_amount" keys do not exist on the array.');
@@ -27,16 +27,7 @@ class Limit extends Model implements ContractsLimit
             throw new InvalidArgumentException('"allowed_amount" should be greater than or equal to 0.');
         }
 
-        $limit = static::query()
-            ->where('name', $data['name'])
-            ->when(isset($data['plan']), fn($q) => $q->where('plan', $data['plan']))
-            ->first();
-
-        if (!$limit) {
-            return static::query()->create($data);
-        }
-
-        return $limit;
+        return static::firstOrCreate(Arr::only($data, ['name', 'plan']), $data);
     }
 
     public static function findByName(string $name, ?string $plan = null): ContractsLimit
@@ -53,40 +44,37 @@ class Limit extends Model implements ContractsLimit
         return $limit;
     }
 
-    public static function incrementLimit(string $name, string $plan, float $amount = 1): bool
+    public static function findById(int $id): ContractsLimit
+    {
+        $limit = static::find($id);
+
+        if (!$limit) {
+            throw new LimitDoesNotExist("Limit id '{$id}'");
+        }
+
+        return $limit;
+    }
+
+    public function incrementBy(float $amount = 1): bool
     {
         if ($amount <= 0) {
             throw new InvalidArgumentException('"amount" should be greater than 0.');
         }
 
-        $limit = static::findByName($name, $plan);
+        $this->allowed_amount += $amount;
 
-        $limit->allowed_amount += $amount;
-
-        return $limit->save();
-    }
-
-    public function incrementBy(float $amount = 1): bool
-    {
-        return static::incrementLimit($this->name, $this->plan, $amount);
-    }
-
-    public static function decrementLimit(string $name, string $plan, float $amount = 1): bool
-    {
-        $limit = static::findByName($name, $plan);
-
-        $limit->allowed_amount -= $amount;
-
-        if ($limit->allowed_amount < 0) {
-            throw new InvalidArgumentException('"allowed_amount" should be greater than or equal to 0.');
-        }
-
-        return $limit->save();
+        return $this->save();
     }
 
     public function decrementBy(float $amount = 1): bool
     {
-        return static::decrementLimit($this->name, $this->plan, $amount);
+        $this->allowed_amount -= $amount;
+
+        if ($this->allowed_amount < 0) {
+            throw new InvalidArgumentException('"allowed_amount" should be greater than or equal to 0.');
+        }
+
+        return $this->save();
     }
 
     public static function usageReport(): Collection
