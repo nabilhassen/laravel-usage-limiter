@@ -8,10 +8,20 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Nabilhassen\LaravelUsageLimiter\ServiceProvider;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as Testbench;
+use Workbench\App\Models\User;
 
 abstract class TestCase extends Testbench
 {
     use RefreshDatabase, WithWorkbench;
+
+    protected User $user;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->user = User::factory()->create();
+    }
 
     protected function getPackageProviders($app)
     {
@@ -28,7 +38,7 @@ abstract class TestCase extends Testbench
         ]);
     }
 
-    public function assertException(Closure $test, string $exception): void
+    protected function assertException(Closure $test, string $exception): void
     {
         $this->expectException($exception);
 
