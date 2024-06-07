@@ -60,7 +60,19 @@ class LimitTest extends TestCase
 
         $limit = Limit::findOrCreate($data);
 
-        $this->assertDatabaseHas($limit, $data);
+        $this->assertModelExists($limit);
+    }
+
+    public function test_limit_can_be_created_without_plan(): void
+    {
+        $data = [
+            'name' => 'locations',
+            'allowed_amount' => 5,
+        ];
+
+        $limit = Limit::findOrCreate($data);
+
+        $this->assertModelExists($limit);
     }
 
     public function test_duplicate_limit_cannot_be_created(): void
@@ -89,6 +101,29 @@ class LimitTest extends TestCase
         $firstLimit = Limit::findOrCreate($data);
 
         $data['plan'] = 'pro';
+
+        $secondLimit = Limit::findOrCreate($data);
+
+        $this->assertDatabaseCount(Limit::class, 2);
+
+        $this->assertModelExists($firstLimit);
+
+        $this->assertModelExists($secondLimit);
+
+        $this->assertNotEquals($firstLimit->id, $secondLimit->id);
+    }
+
+    public function test_same_plan_but_different_limit_names_can_be_created(): void
+    {
+        $data = [
+            'name' => 'locations',
+            'plan' => 'standard',
+            'allowed_amount' => 5,
+        ];
+
+        $firstLimit = Limit::findOrCreate($data);
+
+        $data['name'] = 'users';
 
         $secondLimit = Limit::findOrCreate($data);
 
