@@ -4,8 +4,8 @@ namespace Nabilhassen\LaravelUsageLimiter\Tests\Feature;
 
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use InvalidArgumentException;
+use Nabilhassen\LaravelUsageLimiter\Contracts\Limit;
 use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitNotSetOnModel;
-use Nabilhassen\LaravelUsageLimiter\Models\Limit;
 use Nabilhassen\LaravelUsageLimiter\Tests\TestCase;
 use Workbench\App\Models\User;
 
@@ -252,7 +252,7 @@ class HasLimitsTest extends TestCase
 
     protected function createLimit(string $name = 'locations', string $plan = 'standard', float $allowedAmount = 5): Limit
     {
-        return Limit::findOrCreate([
+        return app(Limit::class)::findOrCreate([
             'name' => $name,
             'plan' => $plan,
             'allowed_amount' => $allowedAmount,

@@ -6,7 +6,7 @@ use Illuminate\Contracts\Config\Repository;
 use Nabilhassen\LaravelUsageLimiter\Tests\Feature\LimitTest;
 use Workbench\App\Models\Restrict;
 
-class LimitWithCustomModelTest extends LimitTest
+class HasLimitsWithCustomModelTest extends LimitTest
 {
     protected function defineEnvironment($app)
     {

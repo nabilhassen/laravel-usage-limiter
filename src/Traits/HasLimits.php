@@ -2,12 +2,12 @@
 
 namespace Nabilhassen\LaravelUsageLimiter\Traits;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use InvalidArgumentException;
 use Nabilhassen\LaravelUsageLimiter\Contracts\Limit as ContractsLimit;
 use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitNotSetOnModel;
 use Nabilhassen\LaravelUsageLimiter\LimitManager;
-use Nabilhassen\LaravelUsageLimiter\Models\Limit;
 
 trait HasLimits
 {
@@ -138,7 +138,7 @@ trait HasLimits
         return $limit->allowed_amount - $limit->pivot->used_amount;
     }
 
-    public function getModelLimit(string|ContractsLimit $name): ContractsLimit|Limit
+    public function getModelLimit(string|ContractsLimit $name): ContractsLimit|Model
     {
         $limit = $this->getLimit($name);
 
