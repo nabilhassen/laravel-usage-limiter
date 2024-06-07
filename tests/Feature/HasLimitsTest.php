@@ -146,7 +146,7 @@ class HasLimitsTest extends TestCase
 
         $this->user->setLimit($limit->name);
 
-        $this->user->useLimit($limit->name, 2);
+        $this->user->useLimit($limit->name, 2.0);
 
         $this->assertEquals(2.0, $this->user->usedLimit($limit->name));
 
@@ -184,11 +184,11 @@ class HasLimitsTest extends TestCase
 
         $this->user->setLimit($limit->name);
 
-        $this->user->useLimit($limit->name, 5);
+        $this->user->useLimit($limit->name, 5.0);
 
         $this->assertFalse($this->user->hasEnoughLimit($limit->name));
 
-        $this->user->unuseLimit($limit->name, 3);
+        $this->user->unuseLimit($limit->name, 3.0);
 
         $this->assertTrue($this->user->hasEnoughLimit($limit->name));
     }
@@ -212,7 +212,7 @@ class HasLimitsTest extends TestCase
 
         $this->user->setLimit($limit->name);
 
-        $this->user->useLimit($limit->name, 2);
+        $this->user->useLimit($limit->name, 2.0);
 
         $this->assertEquals(2, $this->user->usedLimit($limit->name));
     }
@@ -223,7 +223,7 @@ class HasLimitsTest extends TestCase
 
         $this->user->setLimit($limit->name);
 
-        $this->user->useLimit($limit->name, 2);
+        $this->user->useLimit($limit->name, 2.0);
 
         $this->assertEquals(3, $this->user->remainingLimit($limit->name));
     }
@@ -282,7 +282,7 @@ class HasLimitsTest extends TestCase
         $this->user->setLimit($limit->name);
         $this->user->setLimit($productLimit->name);
 
-        $this->user->useLimit($limit, 1);
+        $this->user->useLimit($limit);
 
         $report = $this->user->limitUsageReport();
 
@@ -303,7 +303,7 @@ class HasLimitsTest extends TestCase
 
         $this->user->setLimit($limit->name);
 
-        $this->user->useLimit($limit, 1);
+        $this->user->useLimit($limit);
 
         $report = $this->user->limitUsageReport($limit->name);
 
@@ -320,7 +320,7 @@ class HasLimitsTest extends TestCase
 
         $this->user->setLimit($limit->name);
 
-        $this->user->useLimit($limit, 1);
+        $this->user->useLimit($limit);
 
         $report = $this->user->limitUsageReport($limit);
 
@@ -331,7 +331,7 @@ class HasLimitsTest extends TestCase
         $this->assertEquals(4, $report[$limit->name]['remaining_amount']);
     }
 
-    protected function createLimit(string $name = 'locations', string $plan = 'standard', float $allowedAmount = 5): Limit
+    protected function createLimit(string $name = 'locations', string $plan = 'standard', float $allowedAmount = 5.0): Limit
     {
         return app(Limit::class)::findOrCreate([
             'name' => $name,

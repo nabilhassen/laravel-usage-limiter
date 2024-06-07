@@ -25,7 +25,7 @@ trait HasLimits
         });
     }
 
-    public function setLimit(string|ContractsLimit $name, string $plan = null, float $usedAmount = 0): bool
+    public function setLimit(string|ContractsLimit $name, string $plan = null, float $usedAmount = 0.0): bool
     {
         $limit = $this->getLimit($name, $plan);
 
@@ -62,7 +62,7 @@ trait HasLimits
         return true;
     }
 
-    public function useLimit(string|ContractsLimit $name, float $amount = 1): bool
+    public function useLimit(string|ContractsLimit $name, float $amount = 1.0): bool
     {
         $limit = $this->getModelLimit($name);
 
@@ -83,7 +83,7 @@ trait HasLimits
         return true;
     }
 
-    public function unuseLimit(string|ContractsLimit $name, float $amount = 1): bool
+    public function unuseLimit(string|ContractsLimit $name, float $amount = 1.0): bool
     {
         $limit = $this->getModelLimit($name);
 

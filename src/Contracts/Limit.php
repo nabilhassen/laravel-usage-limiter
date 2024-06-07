@@ -10,7 +10,7 @@ interface Limit
 
     public static function findById(int $id): self;
 
-    public function incrementBy(float $amount = 1): bool;
+    public function incrementBy(float $amount = 1.0): bool;
 
-    public function decrementBy(float $amount = 1): bool;
+    public function decrementBy(float $amount = 1.0): bool;
 }
