@@ -17,6 +17,11 @@ class Limit extends Model implements ContractsLimit
 
     protected $guarded = ['id', 'created_at', 'updated_at', 'deleted_at'];
 
+    public function __construct(array $attributes = [])
+    {
+        $this->table = config('limit.tables.limits') ?: parent::getTable();
+    }
+
     public static function findOrCreate(array $data): Limit
     {
         if (!Arr::has($data, ['name', 'allowed_amount'])) {

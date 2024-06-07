@@ -4,17 +4,16 @@ namespace Nabilhassen\LaravelUsageLimiter;
 
 use Illuminate\Support\ServiceProvider as SupportServiceProvider;
 use Nabilhassen\LaravelUsageLimiter\Contracts\Limit;
-use Nabilhassen\LaravelUsageLimiter\Models\Limit as ModelsLimit;
 
 class ServiceProvider extends SupportServiceProvider
 {
     public function register(): void
     {
+        $this->mergeConfigFrom(__DIR__ . '/../config/limit.php', 'limit');
+
         $this->app->singleton(LimitManager::class);
 
-        $this->app->bind(Limit::class, ModelsLimit::class);
-
-        $this->mergeConfigFrom(__DIR__ . '/../config/limit.php', 'limit');
+        $this->app->bind(Limit::class, $this->app->config['limit.models.limit']);
     }
 
     public function boot(): void
