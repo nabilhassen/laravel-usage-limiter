@@ -11,15 +11,18 @@ use Nabilhassen\LaravelUsageLimiter\LimitManager;
 
 trait HasLimits
 {
-    public function limits(): MorphToMany
+    protected static function bootHasLimits(): void
     {
-        return $this->morphToMany(
-            config('limit.models.limit'),
-            'model',
-            config('limit.tables.model_has_limits'),
-            config('limit.columns.model_morph_key'),
-            config('limit.columns.limit_pivot_key'),
-        )->withPivot(['used_amount']);
+        static::resolveRelationUsing(static::getLimitsRelationship(), function (Model $model) {
+            return $model
+                ->morphToMany(
+                    config('limit.models.limit'),
+                    'model',
+                    config('limit.tables.model_has_limits'),
+                    config('limit.columns.model_morph_key'),
+                    config('limit.columns.limit_pivot_key'),
+                )->withPivot(['used_amount']);
+        });
     }
 
     public function setLimit(string|ContractsLimit $name, string $plan = null, float $usedAmount = 0): bool
@@ -34,7 +37,7 @@ trait HasLimits
             throw new InvalidArgumentException('"used_amount" should always be less than or equal to the limit "allowed_amount"');
         }
 
-        $this->limits()->attach([
+        $this->limitsRelationship()->attach([
             $limit->id => [
                 'used_amount' => $usedAmount,
             ],
@@ -47,14 +50,14 @@ trait HasLimits
     {
         $limit = $this->getLimit($name);
 
-        return $this->limits()->where('name', $limit->name)->exists();
+        return $this->limitsRelationship()->where('name', $limit->name)->exists();
     }
 
     public function unsetLimit(string|ContractsLimit $name): bool
     {
         $limit = $this->getLimit($name);
 
-        $this->limits()->detach($limit->id);
+        $this->limitsRelationship()->detach($limit->id);
 
         return true;
     }
@@ -73,7 +76,7 @@ trait HasLimits
             return false;
         }
 
-        $this->limits()->updateExistingPivot($limit->id, [
+        $this->limitsRelationship()->updateExistingPivot($limit->id, [
             'used_amount' => $newUsedAmount,
         ]);
 
@@ -90,7 +93,7 @@ trait HasLimits
             return false;
         }
 
-        $this->limits()->updateExistingPivot($limit->id, [
+        $this->limitsRelationship()->updateExistingPivot($limit->id, [
             'used_amount' => $newUsedAmount,
         ]);
 
@@ -101,7 +104,7 @@ trait HasLimits
     {
         $limit = $this->getLimit($name);
 
-        $this->limits()->updateExistingPivot($limit->id,[
+        $this->limitsRelationship()->updateExistingPivot($limit->id, [
             'used_amount' => 0,
         ]);
 
@@ -142,7 +145,7 @@ trait HasLimits
     {
         $limit = $this->getLimit($name);
 
-        $modelLimit = $this->limits()->firstWhere('name', $limit->name);
+        $modelLimit = $this->limitsRelationship()->firstWhere('name', $limit->name);
 
         if (!$modelLimit) {
             throw new LimitNotSetOnModel($name);
@@ -154,5 +157,17 @@ trait HasLimits
     public function getLimit(string|ContractsLimit $name, ?string $plan = null): ContractsLimit
     {
         return is_string($name) ? app(LimitManager::class)->getLimitClass()::findByName($name, $plan) : $name;
+    }
+
+    public function limitsRelationship(): MorphToMany
+    {
+        $relationshipName = static::getLimitsRelationship();
+
+        return $this->$relationshipName();
+    }
+
+    private static function getLimitsRelationship(): string 
+    {
+        return config('limit.relationship');
     }
 }

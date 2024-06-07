@@ -12,7 +12,7 @@ class HasLimitsTest extends TestCase
 {
     public function test_model_has_relationship_with_limit(): void
     {
-        $this->assertInstanceOf(MorphToMany::class, $this->user->limits());
+        $this->assertInstanceOf(MorphToMany::class, $this->user->limitsRelationship());
     }
 
     public function test_cannot_set_limit_with_same_name_but_different_plan(): void
@@ -25,9 +25,9 @@ class HasLimitsTest extends TestCase
 
         $this->user->setLimit($proLimit->name, $proLimit->plan);
 
-        $this->assertEquals(1, $this->user->limits()->count());
+        $this->assertEquals(1, $this->user->limitsRelationship()->count());
 
-        $this->assertEquals($limit->id, $this->user->limits()->first()->id);
+        $this->assertEquals($limit->id, $this->user->limitsRelationship()->first()->id);
     }
 
     public function test_exception_is_thrown_if_beginning_used_amount_is_greater_than_limit_allowed_amount(): void
@@ -70,7 +70,7 @@ class HasLimitsTest extends TestCase
 
         $this->user->setLimit($productLimit->name);
 
-        $this->assertEquals(2, $this->user->limits()->count());
+        $this->assertEquals(2, $this->user->limitsRelationship()->count());
 
         $this->assertTrue($this->user->isLimitSet($limit->name));
 

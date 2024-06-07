@@ -17,6 +17,12 @@ return [
 
     ],
 
+    /*
+     * Change the relationship method name if you already have used for other purposes.
+     */
+
+    'relationship' => 'limits',
+
     'tables' => [
 
         /*
