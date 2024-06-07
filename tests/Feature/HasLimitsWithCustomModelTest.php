@@ -13,9 +13,11 @@ class HasLimitsWithCustomModelTest extends LimitTest
     {
         tap($app['config'], function (Repository $config) {
             $config->set('limit.models.limit', Restrict::class);
+            $config->set('limit.relationship', 'restricts');
             $config->set('limit.tables.limits', 'restricts');
             $config->set('limit.tables.model_has_limits', 'model_has_restricts');
-            $config->set('limit.relationship', 'restricts');
+            $config->set('limit.columns.limit_pivot_key', 'restrict_id');
+            $config->set('limit.columns.model_morph_key', 'model_id');
         });
     }
 
