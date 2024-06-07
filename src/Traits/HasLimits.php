@@ -6,13 +6,20 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use InvalidArgumentException;
 use Nabilhassen\LaravelUsageLimiter\Contracts\Limit as ContractsLimit;
 use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitNotSetOnModel;
+use Nabilhassen\LaravelUsageLimiter\LimitManager;
 use Nabilhassen\LaravelUsageLimiter\Models\Limit;
 
 trait HasLimits
 {
     public function limits(): MorphToMany
     {
-        return $this->morphToMany(Limit::class, 'model', 'model_has_limits')->withPivot(['used_amount']);
+        return $this->morphToMany(
+            config('limit.models.limit'),
+            'model',
+            config('limit.tables.model_has_limits'),
+            config('limit.columns.model_morph_key'),
+            config('limit.columns.limit_pivot_key'),
+        )->withPivot(['used_amount']);
     }
 
     public function setLimit(string|ContractsLimit $name, string $plan = null, float $usedAmount = 0): bool
@@ -146,6 +153,6 @@ trait HasLimits
 
     public function getLimit(string|ContractsLimit $name, ?string $plan = null): ContractsLimit
     {
-        return is_string($name) ? Limit::findByName($name, $plan) : $name;
+        return is_string($name) ? app(LimitManager::class)->getLimitClass()::findByName($name, $plan) : $name;
     }
 }

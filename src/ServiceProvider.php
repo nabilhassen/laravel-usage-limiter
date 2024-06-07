@@ -10,12 +10,20 @@ class ServiceProvider extends SupportServiceProvider
 {
     public function register(): void
     {
+        $this->app->singleton(LimitManager::class);
+
         $this->app->bind(Limit::class, ModelsLimit::class);
+
+        $this->mergeConfigFrom(__DIR__ . '/../config/limit.php', 'limit');
     }
 
     public function boot(): void
     {
         $this->publishMigration();
+
+        $this->publishes([
+            __DIR__ . '/../config/limit.php' => config_path('limit.php'),
+        ]);
     }
 
     protected function publishMigration(): void
