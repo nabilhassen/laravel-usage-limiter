@@ -5,7 +5,6 @@ namespace Nabilhassen\LaravelUsageLimiter\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Nabilhassen\LaravelUsageLimiter\Contracts\Limit as ContractsLimit;
 use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitDoesNotExist;
@@ -80,10 +79,5 @@ class Limit extends Model implements ContractsLimit
         }
 
         return $this->save();
-    }
-
-    public static function usageReport(): Collection
-    {
-        return collect();
     }
 }

@@ -166,8 +166,25 @@ trait HasLimits
         return $this->$relationshipName();
     }
 
-    private static function getLimitsRelationship(): string 
+    private static function getLimitsRelationship(): string
     {
         return config('limit.relationship');
+    }
+
+    public function limitUsageReport(string|ContractsLimit $name = null): array
+    {
+        $modelLimits = !is_null($name) ? collect([$this->getModelLimit($name)]) : $this->limitsRelationship()->get();
+
+        return
+        $modelLimits
+            ->mapWithKeys(function ($modelLimit) {
+                return [
+                    $modelLimit->name => [
+                        'allowed_amount' => $modelLimit->allowed_amount,
+                        'used_amount' => $modelLimit->pivot->used_amount,
+                        'remaining_amount' => $modelLimit->allowed_amount - $modelLimit->pivot->used_amount,
+                    ],
+                ];
+            })->all();
     }
 }

@@ -274,6 +274,63 @@ class HasLimitsTest extends TestCase
         $this->assertEquals($limit->id, $this->user->getLimit($limit)->id);
     }
 
+    public function test_can_get_all_limits_usage_report(): void
+    {
+        $limit = $this->createLimit();
+        $productLimit = $this->createLimit(name: 'products');
+
+        $this->user->setLimit($limit->name);
+        $this->user->setLimit($productLimit->name);
+
+        $this->user->useLimit($limit, 1);
+
+        $report = $this->user->limitUsageReport();
+
+        $this->assertCount(2, $report);
+
+        $this->assertEquals(5, $report[$limit->name]['allowed_amount']);
+        $this->assertEquals(1, $report[$limit->name]['used_amount']);
+        $this->assertEquals(4, $report[$limit->name]['remaining_amount']);
+
+        $this->assertEquals(5, $report[$productLimit->name]['allowed_amount']);
+        $this->assertEquals(0, $report[$productLimit->name]['used_amount']);
+        $this->assertEquals(5, $report[$productLimit->name]['remaining_amount']);
+    }
+
+    public function test_can_get_a_limit_usage_report_by_limit_name(): void
+    {
+        $limit = $this->createLimit();
+
+        $this->user->setLimit($limit->name);
+
+        $this->user->useLimit($limit, 1);
+
+        $report = $this->user->limitUsageReport($limit->name);
+
+        $this->assertCount(1, $report);
+
+        $this->assertEquals(5, $report[$limit->name]['allowed_amount']);
+        $this->assertEquals(1, $report[$limit->name]['used_amount']);
+        $this->assertEquals(4, $report[$limit->name]['remaining_amount']);
+    }
+
+    public function test_can_get_a_limit_usage_report_by_limit_instance(): void
+    {
+        $limit = $this->createLimit();
+
+        $this->user->setLimit($limit->name);
+
+        $this->user->useLimit($limit, 1);
+
+        $report = $this->user->limitUsageReport($limit);
+
+        $this->assertCount(1, $report);
+
+        $this->assertEquals(5, $report[$limit->name]['allowed_amount']);
+        $this->assertEquals(1, $report[$limit->name]['used_amount']);
+        $this->assertEquals(4, $report[$limit->name]['remaining_amount']);
+    }
+
     protected function createLimit(string $name = 'locations', string $plan = 'standard', float $allowedAmount = 5): Limit
     {
         return app(Limit::class)::findOrCreate([
