@@ -12,7 +12,7 @@ trait HasLimits
 {
     public function limits(): MorphToMany
     {
-        return $this->morphToMany(Limit::class, 'limitable')->withPivot(['used_amount']);
+        return $this->morphToMany(Limit::class, 'model', 'model_has_limits')->withPivot(['used_amount']);
     }
 
     public function setLimit(string|ContractsLimit $name, string $plan = null, float $usedAmount = 0): bool

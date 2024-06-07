@@ -20,19 +20,19 @@ return new class extends Migration
             $table->unique(['name', 'plan']);
         });
 
-        Schema::create('limitables', function (Blueprint $table) {
+        Schema::create('model_has_limits', function (Blueprint $table) {
             $table->id();
             $table->foreignId('limit_id')->nullable()->references('id')->on('limits')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->morphs('limitable');
+            $table->morphs('model');
             $table->double('used_amount');
 
-            $table->unique(['limitable_type', 'limitable_id', 'limit_id']);
+            $table->unique(['model_type', 'model_id', 'limit_id']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('limitables');
+        Schema::dropIfExists('model_has_limits');
         Schema::dropIfExists('limits');
     }
 };
