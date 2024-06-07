@@ -60,6 +60,39 @@ class HasLimitsTest extends TestCase
         $this->assertEquals(0, $this->user->usedLimit($limit->name));
     }
 
+    public function test_can_set_limits_with_different_names_on_a_model(): void
+    {
+        $limit = $this->createLimit();
+
+        $productLimit = $this->createLimit(name: 'products');
+
+        $this->user->setLimit($limit->name);
+
+        $this->user->setLimit($productLimit->name);
+
+        $this->assertEquals(2, $this->user->limits()->count());
+
+        $this->assertTrue($this->user->isLimitSet($limit->name));
+
+        $this->assertTrue($this->user->isLimitSet($productLimit->name));
+    }
+
+    public function test_limit_is_set_on_a_model(): void
+    {
+        $limit = $this->createLimit();
+
+        $this->user->setLimit($limit->name);
+
+        $this->assertTrue($this->user->isLimitSet($limit->name));
+    }
+
+    public function test_limit_is_not_set_on_a_model(): void
+    {
+        $limit = $this->createLimit();
+
+        $this->assertFalse($this->user->isLimitSet($limit->name));
+    }
+
     public function test_can_unset_limit_off_of_a_model(): void
     {
         $limit = $this->createLimit();

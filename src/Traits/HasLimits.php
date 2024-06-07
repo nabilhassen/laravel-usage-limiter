@@ -34,7 +34,7 @@ trait HasLimits
             throw new InvalidArgumentException('"used_amount" should always be less than or equal to the limit "allowed_amount"');
         }
 
-        $this->limits()->sync([
+        $this->limits()->attach([
             $limit->id => [
                 'used_amount' => $usedAmount,
             ],
@@ -73,8 +73,8 @@ trait HasLimits
             return false;
         }
 
-        $this->limits()->syncWithoutDetaching([
-            $this->id => ['used_amount' => $newUsedAmount],
+        $this->limits()->updateExistingPivot($this->id, [
+            'used_amount' => $newUsedAmount,
         ]);
 
         return true;
@@ -90,8 +90,8 @@ trait HasLimits
             return false;
         }
 
-        $this->limits()->syncWithoutDetaching([
-            $this->id => ['used_amount' => $newUsedAmount],
+        $this->limits()->updateExistingPivot($this->id, [
+            'used_amount' => $newUsedAmount,
         ]);
 
         return true;
@@ -101,8 +101,8 @@ trait HasLimits
     {
         $limit = $this->getLimit($name);
 
-        $this->limits()->syncWithoutDetaching([
-            $limit->id => ['used_amount' => 0],
+        $this->limits()->updateExistingPivot($limit->id,[
+            'used_amount' => 0,
         ]);
 
         return true;
