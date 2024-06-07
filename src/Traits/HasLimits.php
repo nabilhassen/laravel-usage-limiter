@@ -73,7 +73,7 @@ trait HasLimits
             return false;
         }
 
-        $this->limits()->updateExistingPivot($this->id, [
+        $this->limits()->updateExistingPivot($limit->id, [
             'used_amount' => $newUsedAmount,
         ]);
 
@@ -90,7 +90,7 @@ trait HasLimits
             return false;
         }
 
-        $this->limits()->updateExistingPivot($this->id, [
+        $this->limits()->updateExistingPivot($limit->id, [
             'used_amount' => $newUsedAmount,
         ]);
 

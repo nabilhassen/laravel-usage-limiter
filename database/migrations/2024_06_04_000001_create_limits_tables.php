@@ -26,7 +26,7 @@ return new class extends Migration
             $table->morphs('model');
             $table->double('used_amount');
 
-            $table->unique(['model_type', 'model_id', 'limit_id']);
+            $table->unique(['model_type', 'model_id', config('limit.columns.limit_pivot_key')]);
         });
     }
 

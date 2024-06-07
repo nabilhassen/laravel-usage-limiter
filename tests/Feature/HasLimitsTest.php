@@ -112,10 +112,32 @@ class HasLimitsTest extends TestCase
 
         $this->user->useLimit($limit->name);
 
-        $this->assertEquals(
-            $limit->allowed_amount - $this->user->usedLimit($limit->name),
-            $this->user->remainingLimit($limit->name)
-        );
+        $this->assertEquals(1.0, $this->user->usedLimit($limit->name));
+
+        $this->assertEquals(4.0, $this->user->remainingLimit($limit->name));
+    }
+
+    public function test_model_can_consume_multiple_limits(): void
+    {
+        $limit = $this->createLimit();
+
+        $productLimit = $this->createLimit(name: 'products');
+
+        $this->user->setLimit($limit->name);
+
+        $this->user->useLimit($limit->name);
+
+        $this->user->setLimit($productLimit->name);
+
+        $this->user->useLimit($productLimit->name, 3.0);
+
+        $this->assertEquals(1.0, $this->user->usedLimit($limit->name));
+
+        $this->assertEquals(4.0, $this->user->remainingLimit($limit->name));
+
+        $this->assertEquals(3.0, $this->user->usedLimit($productLimit->name));
+
+        $this->assertEquals(2.0, $this->user->remainingLimit($productLimit->name));
     }
 
     public function test_model_can_unconsume_limit(): void
@@ -126,12 +148,15 @@ class HasLimitsTest extends TestCase
 
         $this->user->useLimit($limit->name, 2);
 
+        $this->assertEquals(2.0, $this->user->usedLimit($limit->name));
+
+        $this->assertEquals(3.0, $this->user->remainingLimit($limit->name));
+
         $this->user->unuseLimit($limit->name);
 
-        $this->assertEquals(
-            $limit->allowed_amount - $this->user->usedLimit($limit->name),
-            $this->user->remainingLimit($limit->name)
-        );
+        $this->assertEquals(1.0, $this->user->usedLimit($limit->name));
+
+        $this->assertEquals(4.0, $this->user->remainingLimit($limit->name));
     }
 
     public function test_model_can_reset_limit(): void
@@ -142,12 +167,15 @@ class HasLimitsTest extends TestCase
 
         $this->user->useLimit($limit->name);
 
+        $this->assertEquals(1.0, $this->user->usedLimit($limit->name));
+
+        $this->assertEquals(4.0, $this->user->remainingLimit($limit->name));
+
         $this->user->resetLimit($limit->name);
 
-        $this->assertEquals(
-            $limit->allowed_amount,
-            $this->user->remainingLimit($limit->name)
-        );
+        $this->assertEquals(0.0, $this->user->usedLimit($limit->name));
+
+        $this->assertEquals(5.0, $this->user->remainingLimit($limit->name));
     }
 
     public function test_model_cannot_exceed_limit(): void
