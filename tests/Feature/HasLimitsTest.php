@@ -9,7 +9,7 @@ use Nabilhassen\LaravelUsageLimiter\Models\Limit;
 use Nabilhassen\LaravelUsageLimiter\Tests\TestCase;
 use Workbench\App\Models\User;
 
-class ModelHasLimitsTest extends TestCase
+class HasLimitsTest extends TestCase
 {
     public function test_model_has_relationship_with_limit(): void
     {
