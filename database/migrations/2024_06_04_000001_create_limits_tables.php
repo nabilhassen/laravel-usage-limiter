@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('limits', function (Blueprint $table) {
+        Schema::create(config('limit.tables.limits'), function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('plan')->nullable();
@@ -20,9 +20,9 @@ return new class extends Migration
             $table->unique(['name', 'plan']);
         });
 
-        Schema::create('model_has_limits', function (Blueprint $table) {
+        Schema::create(config('limit.tables.model_has_limits'), function (Blueprint $table) {
             $table->id();
-            $table->foreignId('limit_id')->nullable()->references('id')->on('limits')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId(config('limit.columns.limit_pivot_key'))->nullable()->references('id')->on(config('limit.tables.limits'))->cascadeOnDelete()->cascadeOnUpdate();
             $table->morphs('model');
             $table->double('used_amount');
 
@@ -32,7 +32,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('model_has_limits');
-        Schema::dropIfExists('limits');
+        Schema::dropIfExists(config('limit.tables.model_has_limits'));
+        Schema::dropIfExists(config('limit.tables.limits'));
     }
 };

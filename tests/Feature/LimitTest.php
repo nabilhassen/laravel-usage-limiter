@@ -4,8 +4,8 @@ namespace Nabilhassen\LaravelUsageLimiter\Tests\Feature;
 
 use Illuminate\Support\Str;
 use InvalidArgumentException;
+use Nabilhassen\LaravelUsageLimiter\Contracts\Limit as LimitContract;
 use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitDoesNotExist;
-use Nabilhassen\LaravelUsageLimiter\Models\Limit;
 use Nabilhassen\LaravelUsageLimiter\Tests\TestCase;
 
 class LimitTest extends TestCase
@@ -18,7 +18,7 @@ class LimitTest extends TestCase
         ];
 
         $this->assertException(
-            fn() => Limit::findOrCreate($data),
+            fn() => app(LimitContract::class)::findOrCreate($data),
             InvalidArgumentException::class
         );
     }
@@ -31,7 +31,7 @@ class LimitTest extends TestCase
         ];
 
         $this->assertException(
-            fn() => Limit::findOrCreate($data),
+            fn() => app(LimitContract::class)::findOrCreate($data),
             InvalidArgumentException::class
         );
     }
@@ -45,7 +45,7 @@ class LimitTest extends TestCase
         ];
 
         $this->assertException(
-            fn() => Limit::findOrCreate($data),
+            fn() => app(LimitContract::class)::findOrCreate($data),
             InvalidArgumentException::class
         );
     }
@@ -58,7 +58,7 @@ class LimitTest extends TestCase
             'allowed_amount' => 5,
         ];
 
-        $limit = Limit::findOrCreate($data);
+        $limit = app(LimitContract::class)::findOrCreate($data);
 
         $this->assertModelExists($limit);
     }
@@ -70,7 +70,7 @@ class LimitTest extends TestCase
             'allowed_amount' => 5,
         ];
 
-        $limit = Limit::findOrCreate($data);
+        $limit = app(LimitContract::class)::findOrCreate($data);
 
         $this->assertModelExists($limit);
     }
@@ -83,9 +83,9 @@ class LimitTest extends TestCase
             'allowed_amount' => 5,
         ];
 
-        $firstLimit = Limit::findOrCreate($data);
+        $firstLimit = app(LimitContract::class)::findOrCreate($data);
 
-        $secondLimit = Limit::findOrCreate($data);
+        $secondLimit = app(LimitContract::class)::findOrCreate($data);
 
         $this->assertEquals($firstLimit->id, $secondLimit->id);
     }
@@ -98,13 +98,13 @@ class LimitTest extends TestCase
             'allowed_amount' => 5,
         ];
 
-        $firstLimit = Limit::findOrCreate($data);
+        $firstLimit = app(LimitContract::class)::findOrCreate($data);
 
         $data['plan'] = 'pro';
 
-        $secondLimit = Limit::findOrCreate($data);
+        $secondLimit = app(LimitContract::class)::findOrCreate($data);
 
-        $this->assertDatabaseCount(Limit::class, 2);
+        $this->assertDatabaseCount(app(LimitContract::class), 2);
 
         $this->assertModelExists($firstLimit);
 
@@ -121,13 +121,13 @@ class LimitTest extends TestCase
             'allowed_amount' => 5,
         ];
 
-        $firstLimit = Limit::findOrCreate($data);
+        $firstLimit = app(LimitContract::class)::findOrCreate($data);
 
         $data['name'] = 'users';
 
-        $secondLimit = Limit::findOrCreate($data);
+        $secondLimit = app(LimitContract::class)::findOrCreate($data);
 
-        $this->assertDatabaseCount(Limit::class, 2);
+        $this->assertDatabaseCount(app(LimitContract::class), 2);
 
         $this->assertModelExists($firstLimit);
 
@@ -139,7 +139,7 @@ class LimitTest extends TestCase
     public function test_exception_is_thrown_if_limit_does_not_exist(): void
     {
         $this->assertException(
-            fn() => Limit::findByName(Str::random()),
+            fn() => app(LimitContract::class)::findByName(Str::random()),
             LimitDoesNotExist::class
         );
     }
@@ -152,11 +152,11 @@ class LimitTest extends TestCase
             'allowed_amount' => 5,
         ];
 
-        $limit = Limit::findOrCreate($data);
+        $limit = app(LimitContract::class)::findOrCreate($data);
 
         $this->assertEquals(
             $limit->id,
-            Limit::findByName($limit->name, $limit->plan)->id
+            app(LimitContract::class)::findByName($limit->name, $limit->plan)->id
         );
     }
 
@@ -168,20 +168,20 @@ class LimitTest extends TestCase
             'allowed_amount' => 5,
         ];
 
-        $firstLimit = Limit::findOrCreate($data);
+        $firstLimit = app(LimitContract::class)::findOrCreate($data);
 
         $data['plan'] = 'pro';
 
-        $secondLimit = Limit::findOrCreate($data);
+        $secondLimit = app(LimitContract::class)::findOrCreate($data);
 
         $this->assertEquals(
             $firstLimit->id,
-            Limit::findByName($firstLimit->name, $firstLimit->plan)->id
+            app(LimitContract::class)::findByName($firstLimit->name, $firstLimit->plan)->id
         );
 
         $this->assertEquals(
             $secondLimit->id,
-            Limit::findByName($secondLimit->name, $secondLimit->plan)->id
+            app(LimitContract::class)::findByName($secondLimit->name, $secondLimit->plan)->id
         );
     }
 
@@ -194,7 +194,7 @@ class LimitTest extends TestCase
         ];
 
         $this->assertException(
-            fn() => Limit::findById(1),
+            fn() => app(LimitContract::class)::findById(1),
             LimitDoesNotExist::class
         );
     }
@@ -207,11 +207,11 @@ class LimitTest extends TestCase
             'allowed_amount' => 5,
         ];
 
-        $limit = Limit::findOrCreate($data);
+        $limit = app(LimitContract::class)::findOrCreate($data);
 
         $this->assertEquals(
             $limit->id,
-            Limit::findById($limit->id)->id
+            app(LimitContract::class)::findById($limit->id)->id
         );
     }
 
@@ -223,7 +223,7 @@ class LimitTest extends TestCase
             'allowed_amount' => 5,
         ];
 
-        $limit = Limit::findOrCreate($data);
+        $limit = app(LimitContract::class)::findOrCreate($data);
 
         $this->assertException(
             fn() => $limit->incrementBy(0),
@@ -239,13 +239,13 @@ class LimitTest extends TestCase
             'allowed_amount' => 5,
         ];
 
-        $limit = Limit::findOrCreate($data);
+        $limit = app(LimitContract::class)::findOrCreate($data);
 
         $limit->incrementBy(3);
 
         $this->assertEquals(
             8,
-            Limit::findByName($limit->name, $limit->plan)->allowed_amount
+            app(LimitContract::class)::findByName($limit->name, $limit->plan)->allowed_amount
         );
     }
 
@@ -257,7 +257,7 @@ class LimitTest extends TestCase
             'allowed_amount' => 5,
         ];
 
-        $limit = Limit::findOrCreate($data);
+        $limit = app(LimitContract::class)::findOrCreate($data);
 
         $this->assertException(
             fn() => $limit->decrementBy(6),
@@ -273,13 +273,13 @@ class LimitTest extends TestCase
             'allowed_amount' => 5,
         ];
 
-        $limit = Limit::findOrCreate($data);
+        $limit = app(LimitContract::class)::findOrCreate($data);
 
         $limit->decrementBy(3);
 
         $this->assertEquals(
             2,
-            Limit::findByName($limit->name, $limit->plan)->allowed_amount
+            app(LimitContract::class)::findByName($limit->name, $limit->plan)->allowed_amount
         );
     }
 }

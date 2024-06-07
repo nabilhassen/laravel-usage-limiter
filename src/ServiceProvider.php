@@ -12,8 +12,6 @@ class ServiceProvider extends SupportServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../config/limit.php', 'limit');
 
         $this->app->singleton(LimitManager::class);
-
-        $this->app->bind(Limit::class, $this->app->config['limit.models.limit']);
     }
 
     public function boot(): void
@@ -23,6 +21,8 @@ class ServiceProvider extends SupportServiceProvider
         $this->publishes([
             __DIR__ . '/../config/limit.php' => config_path('limit.php'),
         ]);
+
+        $this->app->bind(Limit::class, $this->app->config['limit.models.limit']);
     }
 
     protected function publishMigration(): void
