@@ -1,15 +1,15 @@
 <?php
 
-namespace Nabilhassen\LaravelUsageLimiter\Models;
+namespace NabilHassen\LaravelUsageLimiter\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
-use Nabilhassen\LaravelUsageLimiter\Contracts\Limit as ContractsLimit;
-use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitAlreadyExists;
-use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitDoesNotExist;
-use Nabilhassen\LaravelUsageLimiter\Traits\RefreshCache;
+use NabilHassen\LaravelUsageLimiter\Contracts\Limit as ContractsLimit;
+use NabilHassen\LaravelUsageLimiter\Exceptions\LimitAlreadyExists;
+use NabilHassen\LaravelUsageLimiter\Exceptions\LimitDoesNotExist;
+use NabilHassen\LaravelUsageLimiter\Traits\RefreshCache;
 
 class Limit extends Model implements ContractsLimit
 {

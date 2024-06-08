@@ -1,9 +1,9 @@
 <?php
 
-namespace Nabilhassen\LaravelUsageLimiter\Tests\Feature;
+namespace NabilHassen\LaravelUsageLimiter\Tests\Feature;
 
 use Illuminate\Contracts\Config\Repository;
-use Nabilhassen\LaravelUsageLimiter\Tests\Feature\LimitTest;
+use NabilHassen\LaravelUsageLimiter\Tests\Feature\LimitTest;
 use Workbench\App\Models\Restrict;
 
 class LimitWithCustomModelTest extends LimitTest

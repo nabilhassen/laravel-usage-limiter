@@ -1,8 +1,8 @@
 <?php
 
-namespace Nabilhassen\LaravelUsageLimiter;
+namespace NabilHassen\LaravelUsageLimiter;
 
-use Nabilhassen\LaravelUsageLimiter\Models\Limit as LimitModel;
+use NabilHassen\LaravelUsageLimiter\Models\Limit as LimitModel;
 
 class LimitManager
 {

@@ -1,14 +1,14 @@
 <?php
 
-namespace Nabilhassen\LaravelUsageLimiter\Tests;
+namespace NabilHassen\LaravelUsageLimiter\Tests;
 
 use Closure;
 use function Orchestra\Testbench\workbench_path;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithViews;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\View;
-use Nabilhassen\LaravelUsageLimiter\Contracts\Limit;
-use Nabilhassen\LaravelUsageLimiter\ServiceProvider;
+use NabilHassen\LaravelUsageLimiter\Contracts\Limit;
+use NabilHassen\LaravelUsageLimiter\ServiceProvider;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as Testbench;
 use Workbench\App\Models\User;

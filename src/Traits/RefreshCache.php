@@ -1,6 +1,6 @@
 <?php
 
-namespace Nabilhassen\LaravelUsageLimiter\Traits;
+namespace NabilHassen\LaravelUsageLimiter\Traits;
 
 trait RefreshCache
 {

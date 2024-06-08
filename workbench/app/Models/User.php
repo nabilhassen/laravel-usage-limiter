@@ -4,7 +4,7 @@ namespace Workbench\App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as AuthUser;
-use Nabilhassen\LaravelUsageLimiter\Traits\HasLimits;
+use NabilHassen\LaravelUsageLimiter\Traits\HasLimits;
 use Workbench\Database\Factories\UserFactory;
 
 class User extends AuthUser

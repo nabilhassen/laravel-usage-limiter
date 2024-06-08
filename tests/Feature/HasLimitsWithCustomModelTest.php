@@ -1,10 +1,10 @@
 <?php
 
-namespace Nabilhassen\LaravelUsageLimiter\Tests\Feature;
+namespace NabilHassen\LaravelUsageLimiter\Tests\Feature;
 
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Nabilhassen\LaravelUsageLimiter\Tests\Feature\HasLimitsTest;
+use NabilHassen\LaravelUsageLimiter\Tests\Feature\HasLimitsTest;
 use Workbench\App\Models\Restrict;
 
 class HasLimitsWithCustomModelTest extends HasLimitsTest

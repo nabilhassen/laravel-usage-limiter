@@ -1,12 +1,12 @@
 <?php
 
-namespace Nabilhassen\LaravelUsageLimiter;
+namespace NabilHassen\LaravelUsageLimiter;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider as SupportServiceProvider;
-use Nabilhassen\LaravelUsageLimiter\Contracts\Limit;
-use Nabilhassen\LaravelUsageLimiter\LimitManager;
+use NabilHassen\LaravelUsageLimiter\Contracts\Limit;
+use NabilHassen\LaravelUsageLimiter\LimitManager;
 
 class ServiceProvider extends SupportServiceProvider
 {

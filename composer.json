@@ -32,19 +32,20 @@
     },
     "autoload": {
         "psr-4": {
-            "Nabilhassen\\LaravelUsageLimiter\\": "src/"
+            "NabilHassen\\LaravelUsageLimiter\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Nabilhassen\\LaravelUsageLimiter\\Tests\\": "tests/",
-            "Workbench\\App\\": "workbench/app/"
+            "NabilHassen\\LaravelUsageLimiter\\Tests\\": "tests/",
+            "Workbench\\App\\": "workbench/app/",
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Nabilhassen\\LaravelUsageLimiter\\ServiceProvider"
+                "NabilHassen\\LaravelUsageLimiter\\ServiceProvider"
             ]
         }
     },

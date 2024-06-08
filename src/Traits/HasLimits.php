@@ -1,12 +1,12 @@
 <?php
 
-namespace Nabilhassen\LaravelUsageLimiter\Traits;
+namespace NabilHassen\LaravelUsageLimiter\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use InvalidArgumentException;
-use Nabilhassen\LaravelUsageLimiter\Contracts\Limit as ContractsLimit;
-use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitNotSetOnModel;
+use NabilHassen\LaravelUsageLimiter\Contracts\Limit as ContractsLimit;
+use NabilHassen\LaravelUsageLimiter\Exceptions\LimitNotSetOnModel;
 
 trait HasLimits
 {

@@ -2,7 +2,7 @@
 
 namespace Workbench\App\Models;
 
-use Nabilhassen\LaravelUsageLimiter\Models\Limit;
+use NabilHassen\LaravelUsageLimiter\Models\Limit;
 
 class Restrict extends Limit
 {

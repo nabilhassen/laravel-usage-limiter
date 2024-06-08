@@ -1,6 +1,6 @@
 <?php
 
-namespace Nabilhassen\LaravelUsageLimiter\Exceptions;
+namespace NabilHassen\LaravelUsageLimiter\Exceptions;
 
 use Exception;
 

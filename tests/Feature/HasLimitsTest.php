@@ -1,11 +1,11 @@
 <?php
 
-namespace Nabilhassen\LaravelUsageLimiter\Tests\Feature;
+namespace NabilHassen\LaravelUsageLimiter\Tests\Feature;
 
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use InvalidArgumentException;
-use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitNotSetOnModel;
-use Nabilhassen\LaravelUsageLimiter\Tests\TestCase;
+use NabilHassen\LaravelUsageLimiter\Exceptions\LimitNotSetOnModel;
+use NabilHassen\LaravelUsageLimiter\Tests\TestCase;
 
 class HasLimitsTest extends TestCase
 {

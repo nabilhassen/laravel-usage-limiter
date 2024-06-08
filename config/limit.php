@@ -8,12 +8,12 @@ return [
      * is often just the "Permission" model but you may use whatever you like.
      *
      * The model you want to use as a Limit model needs to implement the
-     * `Nabilhassen\LaravelUsageLimiter\Contracts\Limit` contract.
+     * `NabilHassen\LaravelUsageLimiter\Contracts\Limit` contract.
      */
 
     'models' => [
 
-        'limit' => Nabilhassen\LaravelUsageLimiter\Models\Limit::class,
+        'limit' => NabilHassen\LaravelUsageLimiter\Models\Limit::class,
 
     ],
 

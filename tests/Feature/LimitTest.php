@@ -1,13 +1,13 @@
 <?php
 
-namespace Nabilhassen\LaravelUsageLimiter\Tests\Feature;
+namespace NabilHassen\LaravelUsageLimiter\Tests\Feature;
 
 use Illuminate\Support\Str;
 use InvalidArgumentException;
-use Nabilhassen\LaravelUsageLimiter\Contracts\Limit as LimitContract;
-use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitAlreadyExists;
-use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitDoesNotExist;
-use Nabilhassen\LaravelUsageLimiter\Tests\TestCase;
+use NabilHassen\LaravelUsageLimiter\Contracts\Limit as LimitContract;
+use NabilHassen\LaravelUsageLimiter\Exceptions\LimitAlreadyExists;
+use NabilHassen\LaravelUsageLimiter\Exceptions\LimitDoesNotExist;
+use NabilHassen\LaravelUsageLimiter\Tests\TestCase;
 
 class LimitTest extends TestCase
 {

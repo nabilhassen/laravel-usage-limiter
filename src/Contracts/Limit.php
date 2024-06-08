@@ -1,6 +1,6 @@
 <?php
 
-namespace Nabilhassen\LaravelUsageLimiter\Contracts;
+namespace NabilHassen\LaravelUsageLimiter\Contracts;
 
 interface Limit
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Nabilhassen\LaravelUsageLimiter\Tests\Feature;
+namespace NabilHassen\LaravelUsageLimiter\Tests\Feature;
 
-use Nabilhassen\LaravelUsageLimiter\Tests\TestCase;
+use NabilHassen\LaravelUsageLimiter\Tests\TestCase;
 
 class BladeTest extends TestCase
 {
