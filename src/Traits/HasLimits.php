@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use InvalidArgumentException;
 use Nabilhassen\LaravelUsageLimiter\Contracts\Limit as ContractsLimit;
 use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitNotSetOnModel;
-use Nabilhassen\LaravelUsageLimiter\LimitManager;
 
 trait HasLimits
 {
@@ -156,7 +155,7 @@ trait HasLimits
 
     public function getLimit(string|ContractsLimit $name, ?string $plan = null): ContractsLimit
     {
-        return is_string($name) ? app(LimitManager::class)->getLimitClass()::findByName($name, $plan) : $name;
+        return is_string($name) ? app(ContractsLimit::class)::findByName($name, $plan) : $name;
     }
 
     public function limitsRelationship(): MorphToMany
