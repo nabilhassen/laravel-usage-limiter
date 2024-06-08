@@ -61,7 +61,7 @@ class Limit extends Model implements ContractsLimit
             ->first();
 
         if (!$limit) {
-            throw new LimitDoesNotExist($name);
+            throw new LimitDoesNotExist($name, $plan);
         }
 
         return $limit;
@@ -72,7 +72,7 @@ class Limit extends Model implements ContractsLimit
         $limit = static::find($id);
 
         if (!$limit) {
-            throw new LimitDoesNotExist("Limit id '{$id}'");
+            throw new LimitDoesNotExist($id);
         }
 
         return $limit;

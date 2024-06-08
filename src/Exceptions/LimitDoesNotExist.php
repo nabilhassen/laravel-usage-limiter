@@ -6,8 +6,10 @@ use Exception;
 
 class LimitDoesNotExist extends Exception
 {
-    public function __construct(string $limitName)
+    public function __construct(string $name, ?string $plan = null)
     {
-        parent::__construct($limitName . ' does not exist. Create it first.');
+        $plan = $plan ?: 'no';
+
+        parent::__construct($name . ' limit for ' . $plan . ' plan does not exist. Create it first.');
     }
 }
