@@ -20,7 +20,9 @@ trait HasLimits
                     config('limit.tables.model_has_limits'),
                     config('limit.columns.model_morph_key'),
                     config('limit.columns.limit_pivot_key'),
-                )->withPivot(['used_amount']);
+                )
+                ->withPivot(['used_amount'])
+                ->withTimestamps();
         });
     }
 

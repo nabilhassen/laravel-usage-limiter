@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('plan')->nullable();
-            $table->double('allowed_amount');
+            $table->decimal('allowed_amount', 11, 4);
             $table->string('reset_frequency')->nullable();
             $table->timestamps();
             $table->softDeletes();
@@ -22,17 +22,31 @@ return new class extends Migration
 
         Schema::create(config('limit.tables.model_has_limits'), function (Blueprint $table) {
             $table->id();
-            $table->foreignId(config('limit.columns.limit_pivot_key'))->nullable()->references('id')->on(config('limit.tables.limits'))->cascadeOnDelete()->cascadeOnUpdate();
-            $table->morphs('model');
-            $table->double('used_amount');
 
-            $table->unique(['model_type', 'model_id', config('limit.columns.limit_pivot_key')]);
+            $table->foreignId(config('limit.columns.limit_pivot_key'))
+                ->nullable()
+                ->references('id')
+                ->on(config('limit.tables.limits'))
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+
+            $table->morphs('model');
+            $table->decimal('used_amount', 11, 4);
+            $table->dateTime('last_resetted_at')->nullable();
+            $table->timestamps();
+
+            $table->unique([
+                'model_type',
+                'model_id',
+                config('limit.columns.limit_pivot_key'),
+            ]);
         });
     }
 
     public function down(): void
     {
         Schema::dropIfExists(config('limit.tables.model_has_limits'));
+
         Schema::dropIfExists(config('limit.tables.limits'));
     }
 };
