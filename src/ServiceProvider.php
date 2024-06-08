@@ -2,8 +2,11 @@
 
 namespace Nabilhassen\LaravelUsageLimiter;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider as SupportServiceProvider;
 use Nabilhassen\LaravelUsageLimiter\Contracts\Limit;
+use Nabilhassen\LaravelUsageLimiter\LimitManager;
 
 class ServiceProvider extends SupportServiceProvider
 {
@@ -22,5 +25,13 @@ class ServiceProvider extends SupportServiceProvider
         ]);
 
         $this->app->bind(Limit::class, $this->app->config['limit.models.limit']);
+
+        Blade::if('limit', function (Model $model, string|Limit $name): bool {
+            try {
+                return $model->hasEnoughLimit($name);
+            } catch (\Throwable $th) {
+                return false;
+            }
+        });
     }
 }
