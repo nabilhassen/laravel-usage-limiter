@@ -5,9 +5,11 @@
         "laravel",
         "usage",
         "limiter",
+        "restrict",
         "seats",
         "per seat",
         "per usage",
+        "account limit",
         "saas"
     ],
     "license": "MIT",

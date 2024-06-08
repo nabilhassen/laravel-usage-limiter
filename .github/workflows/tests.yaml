@@ -1,3 +1,0 @@
-name: tests
-
-on: workflow_dispatch
