@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
 use Nabilhassen\LaravelUsageLimiter\Contracts\Limit as ContractsLimit;
+use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitAlreadyExists;
 use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitDoesNotExist;
 use Nabilhassen\LaravelUsageLimiter\Traits\RefreshCache;
 
@@ -21,7 +22,12 @@ class Limit extends Model implements ContractsLimit
         $this->table = config('limit.tables.limits') ?: parent::getTable();
     }
 
-    public static function findOrCreate(array $data): Limit
+    public static function create(array $data): ContractsLimit
+    {
+        return static::findOrCreate($data, true);
+    }
+
+    public static function findOrCreate(array $data, bool $throw = false): ContractsLimit
     {
         if (!Arr::has($data, ['name', 'allowed_amount'])) {
             throw new InvalidArgumentException('"name" and "allowed_amount" keys do not exist on the array.');
@@ -31,7 +37,20 @@ class Limit extends Model implements ContractsLimit
             throw new InvalidArgumentException('"allowed_amount" should be greater than or equal to 0.');
         }
 
-        return static::firstOrCreate(Arr::only($data, ['name', 'plan']), $data);
+        $limit = static::query()
+            ->where('name', $data['name'])
+            ->when(isset($data['plan']), fn($q) => $q->where('plan', $data['plan']))
+            ->first();
+
+        if ($limit && !$throw) {
+            return $limit;
+        }
+
+        if ($limit && $throw) {
+            throw new LimitAlreadyExists($data['name'], $data['plan'] ?? null);
+        }
+
+        return static::query()->create($data);
     }
 
     public static function findByName(string $name, ?string $plan = null): ContractsLimit

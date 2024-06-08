@@ -4,7 +4,9 @@ namespace Nabilhassen\LaravelUsageLimiter\Contracts;
 
 interface Limit
 {
-    public static function findOrCreate(array $data): self;
+    public static function create(array $data): self;
+
+    public static function findOrCreate(array $data, bool $throw): self;
 
     public static function findByName(string $name, ?string $plan): self;
 

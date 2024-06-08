@@ -5,6 +5,7 @@ namespace Nabilhassen\LaravelUsageLimiter\Tests\Feature;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Nabilhassen\LaravelUsageLimiter\Contracts\Limit as LimitContract;
+use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitAlreadyExists;
 use Nabilhassen\LaravelUsageLimiter\Exceptions\LimitDoesNotExist;
 use Nabilhassen\LaravelUsageLimiter\Tests\TestCase;
 
@@ -47,6 +48,22 @@ class LimitTest extends TestCase
         $this->assertException(
             fn() => app(LimitContract::class)::findOrCreate($data),
             InvalidArgumentException::class
+        );
+    }
+
+    public function test_exeception_is_thrown_when_creating_existing_limit_with_create_method(): void
+    {
+        $data = [
+            'name' => 'locations',
+            'plan' => 'standard',
+            'allowed_amount' => 5.0,
+        ];
+
+        app(LimitContract::class)::create($data);
+
+        $this->assertException(
+            fn() => app(LimitContract::class)::create($data),
+            LimitAlreadyExists::class
         );
     }
 
