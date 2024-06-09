@@ -6,6 +6,7 @@ use Closure;
 use function Orchestra\Testbench\workbench_path;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithViews;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\View;
 use NabilHassen\LaravelUsageLimiter\Contracts\Limit;
 use NabilHassen\LaravelUsageLimiter\ServiceProvider;
@@ -26,6 +27,8 @@ abstract class TestCase extends Testbench
         $this->user = User::factory()->create();
 
         View::addLocation(__DIR__ . '/../workbench/resources/views');
+
+        Artisan::addCommandPaths([__DIR__ . '/../../src/Commands/']);
     }
 
     protected function getPackageProviders($app)

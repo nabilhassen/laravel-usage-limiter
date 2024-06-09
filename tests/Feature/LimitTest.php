@@ -37,6 +37,20 @@ class LimitTest extends TestCase
         );
     }
 
+    public function test_execption_is_thrown_if_allowed_amount_is_not_a_number(): void
+    {
+        $data = [
+            'name' => 'locations',
+            'plan' => 'standard',
+            'allowed_amount' => 'string',
+        ];
+
+        $this->assertException(
+            fn() => app(LimitContract::class)::findOrCreate($data),
+            InvalidArgumentException::class
+        );
+    }
+
     public function test_execption_is_thrown_if_allowed_amount_is_less_than_zero(): void
     {
         $data = [

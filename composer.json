@@ -3,14 +3,14 @@
     "description": "A laravel package to manage and limit usages/seats by plan, users, or other models",
     "keywords": [
         "laravel",
-        "usage",
-        "limiter",
-        "restrict",
-        "seats",
-        "per seat",
-        "per usage",
-        "account limit",
-        "saas"
+        "track usage",
+        "limit usage",
+        "restrict usage",
+        "api usage",
+        "resource usage",
+        "limit account",
+        "plan limits",
+        "per usage"
     ],
     "license": "MIT",
     "authors": [
@@ -23,11 +23,12 @@
     "require": {
         "php": "^8.0",
         "illuminate/database": "^8.12|^9.0|^10.0|^11.0",
-        "illuminate/support": "^8.12|^9.0|^10.0|^11.0"
+        "illuminate/support": "^8.12|^9.0|^10.0|^11.0",
+        "illuminate/console": "^8.12|^9.0|^10.0|^11.0"
     },
     "require-dev": {
         "orchestra/testbench": "^6.23|^7.0|^8.0|^9.0",
-        "phpunit/phpunit": "^9.4|^10.1"
+        "phpunit/phpunit": "^9.0|^10.0"
     },
     "config": {
         "sort-packages": true

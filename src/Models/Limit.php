@@ -33,8 +33,8 @@ class Limit extends Model implements ContractsLimit
             throw new InvalidArgumentException('"name" and "allowed_amount" keys do not exist on the array.');
         }
 
-        if ($data['allowed_amount'] < 0) {
-            throw new InvalidArgumentException('"allowed_amount" should be greater than or equal to 0.');
+        if (!is_numeric($data['allowed_amount']) || $data['allowed_amount'] < 0) {
+            throw new InvalidArgumentException('"allowed_amount" should be a float type and greater than or equal to 0.');
         }
 
         $limit = static::query()
