@@ -2,6 +2,7 @@
 
 namespace NabilHassen\LaravelUsageLimiter\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
@@ -43,7 +44,7 @@ class Limit extends Model implements ContractsLimit
 
         $limit = static::query()
             ->where('name', $data['name'])
-            ->when(isset($data['plan']), fn($q) => $q->where('plan', $data['plan']), fn($q) => $q->whereNull('plan'))
+            ->when(isset($data['plan']), fn(Builder $q) => $q->where('plan', $data['plan']), fn(Builder $q) => $q->whereNull('plan'))
             ->first();
 
         if ($limit && !$throw) {
@@ -61,7 +62,7 @@ class Limit extends Model implements ContractsLimit
     {
         $limit = static::query()
             ->where('name', $name)
-            ->when(filled($plan), fn($q) => $q->where('plan', $plan), fn($q) => $q->whereNull('plan'))
+            ->when(filled($plan), fn(Builder $q) => $q->where('plan', $plan), fn(Builder $q) => $q->whereNull('plan'))
             ->first();
 
         if (!$limit) {

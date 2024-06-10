@@ -3,6 +3,7 @@
 namespace NabilHassen\LaravelUsageLimiter\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Builder;
 use NabilHassen\LaravelUsageLimiter\Contracts\Limit;
 
 class DeleteLimit extends Command
@@ -32,7 +33,7 @@ class DeleteLimit extends Command
 
         $limits = app(Limit::class)::query()
             ->where('name', $this->argument('name'))
-            ->when(!is_null($plan), fn($q) => $q->where('plan', $plan))
+            ->when(!is_null($plan), fn(Builder $q) => $q->where('plan', $plan))
             ->delete();
 
         if (!$limits) {

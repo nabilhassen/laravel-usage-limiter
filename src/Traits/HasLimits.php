@@ -189,7 +189,7 @@ trait HasLimits
 
         return
         $modelLimits
-            ->mapWithKeys(function ($modelLimit) {
+            ->mapWithKeys(function (ContractsLimit $modelLimit) {
                 return [
                     $modelLimit->name => [
                         'allowed_amount' => $modelLimit->allowed_amount,
