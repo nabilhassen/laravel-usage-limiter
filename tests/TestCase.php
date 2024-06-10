@@ -53,7 +53,7 @@ abstract class TestCase extends Testbench
         $test();
     }
 
-    protected function createLimit(string $name = 'locations', ?string $plan = 'standard', float $allowedAmount = 5.0, ?string $resetFrequency = 'every month'): Limit
+    protected function createLimit(string $name = 'locations', ?string $plan = 'standard', float|int $allowedAmount = 5.0, ?string $resetFrequency = 'every month'): Limit
     {
         return app(Limit::class)::findOrCreate([
             'name' => $name,

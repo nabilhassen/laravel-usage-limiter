@@ -34,7 +34,7 @@ class Limit extends Model implements ContractsLimit
         }
 
         if (!is_numeric($data['allowed_amount']) || $data['allowed_amount'] < 0) {
-            throw new InvalidArgumentException('"allowed_amount" should be a float type and greater than or equal to 0.');
+            throw new InvalidArgumentException('"allowed_amount" should be a float|int type and greater than or equal to 0.');
         }
 
         if (isset($data['plan']) && blank($data['plan'])) {
@@ -82,7 +82,7 @@ class Limit extends Model implements ContractsLimit
         return $limit;
     }
 
-    public function incrementBy(float $amount = 1.0): bool
+    public function incrementBy(float|int $amount = 1.0): bool
     {
         if ($amount <= 0) {
             throw new InvalidArgumentException('"amount" should be greater than 0.');
@@ -93,7 +93,7 @@ class Limit extends Model implements ContractsLimit
         return $this->save();
     }
 
-    public function decrementBy(float $amount = 1.0): bool
+    public function decrementBy(float|int $amount = 1.0): bool
     {
         $this->allowed_amount -= $amount;
 
