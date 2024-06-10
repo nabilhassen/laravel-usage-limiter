@@ -7,12 +7,13 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use InvalidArgumentException;
+use NabilHassen\LaravelUsageLimiter\Contracts\Limit;
 
 class LimitManager
 {
     private $cache;
 
-    private string $limitClass;
+    private Limit $limitClass;
 
     /** @var \DateInterval|int */
     private $cacheExpirationTime;
@@ -21,11 +22,11 @@ class LimitManager
 
     private Collection $limits;
 
-    public function __construct(Collection $limits)
+    public function __construct(Collection $limits, Limit $limitClass)
     {
         $this->limits = $limits;
 
-        $this->limitClass = config('limit.models.limit');
+        $this->limitClass = $limitClass;
 
         $this->initCache();
     }
