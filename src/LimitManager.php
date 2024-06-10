@@ -4,26 +4,26 @@ namespace NabilHassen\LaravelUsageLimiter;
 
 use DateInterval;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use InvalidArgumentException;
 
 class LimitManager
 {
-    public $cache;
+    private $cache;
 
-    public string $limitClass;
+    private string $limitClass;
 
     /** @var \DateInterval|int */
-    public $cacheExpirationTime;
+    private $cacheExpirationTime;
 
-    public string $cacheKey;
+    private string $cacheKey;
 
-    /** @var \Illuminate\Support\Collection|Illuminate\Database\Eloquent\Collection */
-    public $limits;
+    private Collection $limits;
 
-    public function __construct()
+    public function __construct(Collection $limits)
     {
-        $this->limits = collect();
+        $this->limits = $limits;
 
         $this->limitClass = config('limit.models.limit');
 
@@ -113,10 +113,22 @@ class LimitManager
             ->first();
     }
 
+    public function getLimits(): Collection
+    {
+        $this->loadLimits();
+
+        return $this->limits;
+    }
+
     public function flushCache(): void
     {
         $this->limits = collect();
 
         $this->cache->forget($this->cacheKey);
+    }
+
+    public function getCacheStore()
+    {
+        return $this->cache->getStore();
     }
 }

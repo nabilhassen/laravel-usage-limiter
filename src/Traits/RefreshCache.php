@@ -8,7 +8,7 @@ trait RefreshCache
 {
     protected static function bootRefreshCache(): void
     {
-        static::created(function () {
+        static::saving(function () {
             app(LimitManager::class)->flushCache();
         });
 
