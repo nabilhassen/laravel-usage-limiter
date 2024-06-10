@@ -81,6 +81,35 @@ class LimitTest extends TestCase
         );
     }
 
+    public function test_exeception_is_thrown_if_reset_frequency_value_is_invalid(): void
+    {
+        $data = [
+            'name' => 'locations',
+            'plan' => 'standard',
+            'allowed_amount' => 5.0,
+            'reset_frequency' => Str::random(),
+        ];
+
+        $this->assertException(
+            fn() => app(LimitContract::class)::create($data),
+            InvalidArgumentException::class
+        );
+    }
+
+    public function test_limit_is_created_if_reset_frequency_value_is_valid(): void
+    {
+        $data = [
+            'name' => 'locations',
+            'plan' => 'standard',
+            'allowed_amount' => 5.0,
+            'reset_frequency' => collect(app(LimitContract::class)::$resetFrequencyPossibleValues)->random(),
+        ];
+
+        $limit = app(LimitContract::class)::create($data);
+
+        $this->assertModelExists($limit);
+    }
+
     public function test_limit_can_be_created(): void
     {
         $data = [

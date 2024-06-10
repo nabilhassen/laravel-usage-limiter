@@ -18,6 +18,19 @@ class Limit extends Model implements ContractsLimit
 
     protected $guarded = ['id', 'created_at', 'updated_at', 'deleted_at'];
 
+    public static array $resetFrequencyPossibleValues = [
+        'every second',
+        'every minute',
+        'every hour',
+        'every day',
+        'every week',
+        'every two weeks',
+        'every month',
+        'every quarter',
+        'every six months',
+        'every year',
+    ];
+
     public function __construct(array $attributes = [])
     {
         $this->table = config('limit.tables.limits') ?: parent::getTable();
@@ -30,17 +43,7 @@ class Limit extends Model implements ContractsLimit
 
     public static function findOrCreate(array $data, bool $throw = false): ContractsLimit
     {
-        if (!Arr::has($data, ['name', 'allowed_amount'])) {
-            throw new InvalidArgumentException('"name" and "allowed_amount" keys do not exist on the array.');
-        }
-
-        if (!is_numeric($data['allowed_amount']) || $data['allowed_amount'] < 0) {
-            throw new InvalidArgumentException('"allowed_amount" should be a float|int type and greater than or equal to 0.');
-        }
-
-        if (isset($data['plan']) && blank($data['plan'])) {
-            unset($data['plan']);
-        }
+        $data = static::validateArgs($data);
 
         $limit = static::query()
             ->where('name', $data['name'])
@@ -56,6 +59,36 @@ class Limit extends Model implements ContractsLimit
         }
 
         return static::query()->create($data);
+    }
+
+    protected static function validateArgs(array $data): array
+    {
+        if (!Arr::has($data, ['name', 'allowed_amount'])) {
+            throw new InvalidArgumentException('"name" and "allowed_amount" keys do not exist on the array.');
+        }
+
+        if (!is_numeric($data['allowed_amount']) || $data['allowed_amount'] < 0) {
+            throw new InvalidArgumentException('"allowed_amount" should be a float|int type and greater than or equal to 0.');
+        }
+
+        if (
+            Arr::has($data, ['reset_frequency']) &&
+            filled($data['reset_frequency']) &&
+            array_search($data['reset_frequency'], static::$resetFrequencyPossibleValues) === false
+        ) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Invalid "reset_frequency" value. Value of "reset_frequency" should be one the following: %s',
+                    implode(', ', static::$resetFrequencyPossibleValues)
+                )
+            );
+        }
+
+        if (isset($data['plan']) && blank($data['plan'])) {
+            unset($data['plan']);
+        }
+
+        return $data;
     }
 
     public static function findByName(string $name, ?string $plan = null): ContractsLimit
