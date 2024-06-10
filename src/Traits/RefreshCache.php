@@ -2,16 +2,18 @@
 
 namespace NabilHassen\LaravelUsageLimiter\Traits;
 
+use NabilHassen\LaravelUsageLimiter\LimitManager;
+
 trait RefreshCache
 {
-    public static function bootRefreshCache()
+    protected static function bootRefreshCache(): void
     {
-        static::saved(function () {
-            // app(PermissionRegistrar::class)->forgetCachedPermissions();
+        static::created(function () {
+            app(LimitManager::class)->flushCache();
         });
 
         static::deleted(function () {
-            // app(PermissionRegistrar::class)->forgetCachedPermissions();
+            app(LimitManager::class)->flushCache();
         });
     }
 }

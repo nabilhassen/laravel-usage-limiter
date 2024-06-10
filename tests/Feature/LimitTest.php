@@ -222,7 +222,7 @@ class LimitTest extends TestCase
     public function test_exception_is_thrown_if_limit_does_not_exist(): void
     {
         $this->assertException(
-            fn() => app(LimitContract::class)::findByName(Str::random()),
+            fn() => app(LimitContract::class)::findByName(Str::random(), Str::random()),
             LimitDoesNotExist::class
         );
     }

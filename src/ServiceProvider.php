@@ -18,6 +18,8 @@ class ServiceProvider extends SupportServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/limit.php', 'limit');
 
+        $this->app->bind(Limit::class, $this->app->config['limit.models.limit']);
+
         $this->app->singleton(LimitManager::class);
     }
 
@@ -27,8 +29,6 @@ class ServiceProvider extends SupportServiceProvider
             __DIR__ . '/../config/limit.php' => config_path('limit.php'),
             __DIR__ . '/../database/migrations' => database_path('migrations'),
         ]);
-
-        $this->app->bind(Limit::class, $this->app->config['limit.models.limit']);
 
         Blade::if('limit', function (Model $model, string|Limit $name, ?string $plan = null): bool {
             try {

@@ -2,7 +2,6 @@
 
 namespace NabilHassen\LaravelUsageLimiter\Models;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
@@ -10,6 +9,7 @@ use InvalidArgumentException;
 use NabilHassen\LaravelUsageLimiter\Contracts\Limit as ContractsLimit;
 use NabilHassen\LaravelUsageLimiter\Exceptions\LimitAlreadyExists;
 use NabilHassen\LaravelUsageLimiter\Exceptions\LimitDoesNotExist;
+use NabilHassen\LaravelUsageLimiter\LimitManager;
 use NabilHassen\LaravelUsageLimiter\Traits\RefreshCache;
 
 class Limit extends Model implements ContractsLimit
@@ -33,6 +33,8 @@ class Limit extends Model implements ContractsLimit
 
     public function __construct(array $attributes = [])
     {
+        parent::__construct($attributes);
+        
         $this->table = config('limit.tables.limits') ?: parent::getTable();
     }
 
@@ -45,10 +47,7 @@ class Limit extends Model implements ContractsLimit
     {
         $data = static::validateArgs($data);
 
-        $limit = static::query()
-            ->where('name', $data['name'])
-            ->when(isset($data['plan']), fn(Builder $q) => $q->where('plan', $data['plan']), fn(Builder $q) => $q->whereNull('plan'))
-            ->first();
+        $limit = app(LimitManager::class)->getLimit($data);
 
         if ($limit && !$throw) {
             return $limit;
@@ -93,10 +92,7 @@ class Limit extends Model implements ContractsLimit
 
     public static function findByName(string $name, ?string $plan = null): ContractsLimit
     {
-        $limit = static::query()
-            ->where('name', $name)
-            ->when(filled($plan), fn(Builder $q) => $q->where('plan', $plan), fn(Builder $q) => $q->whereNull('plan'))
-            ->first();
+        $limit = app(LimitManager::class)->getLimit(compact('name', 'plan'));
 
         if (!$limit) {
             throw new LimitDoesNotExist($name, $plan);
@@ -107,7 +103,7 @@ class Limit extends Model implements ContractsLimit
 
     public static function findById(int $id): ContractsLimit
     {
-        $limit = static::find($id);
+        $limit = app(LimitManager::class)->getLimit(compact('id'));
 
         if (!$limit) {
             throw new LimitDoesNotExist($id);

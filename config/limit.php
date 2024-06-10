@@ -57,4 +57,30 @@ return [
 
         'model_morph_key' => 'model_id',
     ],
+
+    /* Cache-specific settings */
+
+    'cache' => [
+
+        /*
+         * By default all limits are cached for 24 hours to speed up performance.
+         * When limits are updated the cache is flushed automatically.
+         */
+
+        'expiration_time' => \DateInterval::createFromDateString('24 hours'),
+
+        /*
+         * The cache key used to store all limits.
+         */
+
+        'key' => 'nabilhassen.limits.cache',
+
+        /*
+         * You may optionally indicate a specific cache driver/store to use for limits
+         * caching using any of the `store` drivers listed in the cache.php config
+         * file. Using 'default' here means to use the `default` set in cache.php.
+         */
+
+        'store' => 'default',
+    ],
 ];

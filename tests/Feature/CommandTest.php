@@ -51,42 +51,21 @@ class CommandTest extends TestCase
 
         $this->artisan('limit:delete', $limit->only(['name', 'plan']))->assertSuccessful();
 
-        $this->assertDatabaseCount(app(Limit::class), 0);
+        $this->assertSoftDeleted($limit);
     }
 
-    public function test_delete_limit_command_deletes_all_limits_with_the_same_name_if_plan_is_not_provided(): void
+    public function test_delete_limit_command_deletes_limit_if_plan_is_null(): void
     {
-        $this->createLimit();
+        $limit = $this->createLimit();
 
-        $this->createLimit(plan: 'pro');
+        $nullLimit = $this->createLimit(plan: null);
 
         $this->assertDatabaseCount(app(Limit::class), 2);
 
         $this->artisan('limit:delete', ['name' => 'locations'])->assertSuccessful();
 
-        $this->assertDatabaseCount(app(Limit::class), 0);
-    }
-
-    public function test_delete_limit_command_deletes_single_limit_if_plan_is_provided(): void
-    {
-        $this->createLimit();
-
-        $this->createLimit(plan: 'pro');
-
-        $this->assertDatabaseCount(app(Limit::class), 2);
-
-        $this
-            ->artisan('limit:delete', [
-                'name' => 'locations',
-                'plan' => 'pro',
-            ])
-            ->assertSuccessful();
-
-        $this->assertDatabaseCount(app(Limit::class), 1);
-        $this->assertDatabaseHas(app(Limit::class), [
-            'name' => 'locations',
-            'plan' => 'standard',
-        ]);
+        $this->assertNotSoftDeleted($limit);
+        $this->assertSoftDeleted($nullLimit);
     }
 
     public function test_list_limits_command_renders_table_if_limits_are_available(): void

@@ -3,8 +3,8 @@
 namespace NabilHassen\LaravelUsageLimiter\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Builder;
-use NabilHassen\LaravelUsageLimiter\Contracts\Limit;
+use Illuminate\Support\Arr;
+use NabilHassen\LaravelUsageLimiter\LimitManager;
 
 class DeleteLimit extends Command
 {
@@ -29,12 +29,11 @@ class DeleteLimit extends Command
      */
     public function handle(): void
     {
-        $plan = $this->argument('plan');
-
-        $limits = app(Limit::class)::query()
-            ->where('name', $this->argument('name'))
-            ->when(!is_null($plan), fn(Builder $q) => $q->where('plan', $plan))
-            ->delete();
+        $limits = app(LimitManager::class)
+            ->getLimit(
+                Arr::only($this->arguments(), ['name', 'plan'])
+            )
+            ?->delete();
 
         if (!$limits) {
             $this->info('No limits found to be deleted.');
