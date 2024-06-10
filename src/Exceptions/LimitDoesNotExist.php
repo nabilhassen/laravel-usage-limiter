@@ -10,6 +10,6 @@ class LimitDoesNotExist extends Exception
     {
         $plan = $plan ?: 'no';
 
-        parent::__construct($name . ' limit for ' . $plan . ' plan does not exist. Create it first.');
+        parent::__construct("$name limit for $plan plan does not exist. Create it first.");
     }
 }

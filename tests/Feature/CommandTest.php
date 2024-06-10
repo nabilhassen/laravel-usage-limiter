@@ -3,6 +3,7 @@
 namespace NabilHassen\LaravelUsageLimiter\Tests\Feature;
 
 use NabilHassen\LaravelUsageLimiter\Contracts\Limit;
+use NabilHassen\LaravelUsageLimiter\LimitManager;
 use NabilHassen\LaravelUsageLimiter\Tests\TestCase;
 
 class CommandTest extends TestCase
@@ -110,5 +111,48 @@ class CommandTest extends TestCase
             ->artisan('limit:list')
             ->assertSuccessful()
             ->expectsOutputToContain('No limits available.');
+    }
+
+    public function test_reset_limit_usages_command_resets_usages_if_next_reset_is_due(): void
+    {
+        $limit = $this->createLimit();
+
+        $this->user->setLimit($limit);
+
+        $this->user->useLimit($limit, 2.0);
+
+        $this->assertEquals(3, $this->user->remainingLimit($limit));
+
+        // set next_reset behind now() to trigger resetting
+        $this->user->limitsRelationship()->updateExistingPivot($limit->id, ['next_reset' => now()->subDay()]);
+
+        $this->artisan('limit:reset')->assertSuccessful();
+
+        $this->assertEquals(5, $this->user->remainingLimit($limit));
+
+        $this->assertEquals(
+            app(LimitManager::class)->getNextReset($limit->reset_frequency, now()),
+            $this->user->getModelLimit($limit)->pivot->next_reset
+        );
+
+        $this->assertEquals(
+            now(),
+            $this->user->getModelLimit($limit)->pivot->last_reset
+        );
+    }
+
+    public function test_reset_limit_usages_command_does_not_reset_usages_if_next_reset_is_not_due(): void
+    {
+        $limit = $this->createLimit();
+
+        $this->user->setLimit($limit);
+
+        $this->user->useLimit($limit, 2.0);
+
+        $this->assertEquals(3, $this->user->remainingLimit($limit));
+
+        $this->artisan('limit:reset')->assertSuccessful()->expectsOutputToContain('0 usages/rows');
+
+        $this->assertEquals(3, $this->user->remainingLimit($limit));
     }
 }

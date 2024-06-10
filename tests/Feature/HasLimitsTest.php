@@ -5,6 +5,7 @@ namespace NabilHassen\LaravelUsageLimiter\Tests\Feature;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use InvalidArgumentException;
 use NabilHassen\LaravelUsageLimiter\Exceptions\LimitNotSetOnModel;
+use NabilHassen\LaravelUsageLimiter\LimitManager;
 use NabilHassen\LaravelUsageLimiter\Tests\TestCase;
 
 class HasLimitsTest extends TestCase
@@ -57,6 +58,8 @@ class HasLimitsTest extends TestCase
         $this->assertTrue($this->user->isLimitSet($limit->name));
 
         $this->assertEquals(0, $this->user->usedLimit($limit->name));
+
+        $this->assertEquals(now(), $this->user->getModelLimit($limit)->pivot->last_reset);
     }
 
     public function test_can_set_limits_with_different_names_on_a_model(): void
@@ -74,6 +77,39 @@ class HasLimitsTest extends TestCase
         $this->assertTrue($this->user->isLimitSet($limit->name));
 
         $this->assertTrue($this->user->isLimitSet($productLimit->name));
+    }
+
+    public function test_next_reset_is_null_when_limit_reset_frequency_is_null(): void
+    {
+        $limit = $this->createLimit(resetFrequency: null);
+
+        $this->user->setLimit($limit->name);
+
+        $this->assertTrue($this->user->isLimitSet($limit->name));
+
+        $this->assertEquals(
+            null,
+            $this->user->getModelLimit($limit)->pivot->next_reset
+        );
+    }
+
+    public function test_reset_schedule_is_valid_when_setting_a_limit_on_a_model(): void
+    {
+        $limit = $this->createLimit();
+
+        $this->user->setLimit($limit->name);
+
+        $this->assertTrue($this->user->isLimitSet($limit->name));
+
+        $this->assertEquals(
+            now(),
+            $this->user->getModelLimit($limit)->pivot->last_reset
+        );
+
+        $this->assertEquals(
+            app(LimitManager::class)->getNextReset($limit->reset_frequency, now()),
+            $this->user->getModelLimit($limit)->pivot->next_reset
+        );
     }
 
     public function test_limit_is_set_on_a_model(): void

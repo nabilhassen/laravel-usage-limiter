@@ -4,9 +4,11 @@ namespace NabilHassen\LaravelUsageLimiter\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use NabilHassen\LaravelUsageLimiter\Contracts\Limit as ContractsLimit;
 use NabilHassen\LaravelUsageLimiter\Exceptions\LimitNotSetOnModel;
+use NabilHassen\LaravelUsageLimiter\LimitManager;
 
 trait HasLimits
 {
@@ -21,7 +23,7 @@ trait HasLimits
                     config('limit.columns.model_morph_key'),
                     config('limit.columns.limit_pivot_key'),
                 )
-                ->withPivot(['used_amount'])
+                ->withPivot(['used_amount', 'last_reset', 'next_reset'])
                 ->withTimestamps();
         });
     }
@@ -38,11 +40,20 @@ trait HasLimits
             throw new InvalidArgumentException('"used_amount" should always be less than or equal to the limit "allowed_amount"');
         }
 
-        $this->limitsRelationship()->attach([
-            $limit->id => [
-                'used_amount' => $usedAmount,
-            ],
-        ]);
+        DB::transaction(function () use ($limit, $usedAmount) {
+            $this->limitsRelationship()->attach([
+                $limit->id => [
+                    'used_amount' => $usedAmount,
+                    'last_reset' => now(),
+                ],
+            ]);
+
+            if ($limit->reset_frequency) {
+                $this->limitsRelationship()->updateExistingPivot($limit->id, [
+                    'next_reset' => app(LimitManager::class)->getNextReset($limit->reset_frequency, now()),
+                ]);
+            }
+        });
 
         return true;
     }
@@ -142,7 +153,7 @@ trait HasLimits
         return $limit->allowed_amount - $limit->pivot->used_amount;
     }
 
-    public function getModelLimit(string|ContractsLimit $name): ContractsLimit|Model
+    public function getModelLimit(string|ContractsLimit $name)
     {
         $limit = $this->getLimit($name);
 

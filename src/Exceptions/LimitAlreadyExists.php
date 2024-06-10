@@ -10,6 +10,6 @@ class LimitAlreadyExists extends Exception
     {
         $plan = $plan ?: 'no';
 
-        parent::__construct($name . ' limit for ' . $plan . ' plan already exists.');
+        parent::__construct("$name limit for $plan plan already exists.");
     }
 }

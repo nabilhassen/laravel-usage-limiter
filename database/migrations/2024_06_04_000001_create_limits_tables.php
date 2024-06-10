@@ -32,7 +32,8 @@ return new class extends Migration
 
             $table->morphs('model');
             $table->decimal('used_amount', 11, 4);
-            $table->dateTime('last_resetted_at')->nullable();
+            $table->dateTime('last_reset')->nullable();
+            $table->dateTime('next_reset')->nullable();
             $table->timestamps();
 
             $table->unique([
