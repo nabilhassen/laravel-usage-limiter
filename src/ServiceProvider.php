@@ -30,9 +30,9 @@ class ServiceProvider extends SupportServiceProvider
 
         $this->app->bind(Limit::class, $this->app->config['limit.models.limit']);
 
-        Blade::if('limit', function (Model $model, string|Limit $name): bool {
+        Blade::if('limit', function (Model $model, string|Limit $name, ?string $plan = null): bool {
             try {
-                return $model->hasEnoughLimit($name);
+                return $model->hasEnoughLimit($name, $plan);
             } catch (\Throwable $th) {
                 return false;
             }

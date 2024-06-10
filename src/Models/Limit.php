@@ -37,9 +37,13 @@ class Limit extends Model implements ContractsLimit
             throw new InvalidArgumentException('"allowed_amount" should be a float type and greater than or equal to 0.');
         }
 
+        if (isset($data['plan']) && blank($data['plan'])) {
+            unset($data['plan']);
+        }
+
         $limit = static::query()
             ->where('name', $data['name'])
-            ->when(isset($data['plan']), fn($q) => $q->where('plan', $data['plan']))
+            ->when(isset($data['plan']), fn($q) => $q->where('plan', $data['plan']), fn($q) => $q->whereNull('plan'))
             ->first();
 
         if ($limit && !$throw) {
@@ -57,7 +61,7 @@ class Limit extends Model implements ContractsLimit
     {
         $limit = static::query()
             ->where('name', $name)
-            ->when(!is_null($plan), fn($q) => $q->where('plan', $plan))
+            ->when(filled($plan), fn($q) => $q->where('plan', $plan), fn($q) => $q->whereNull('plan'))
             ->first();
 
         if (!$limit) {

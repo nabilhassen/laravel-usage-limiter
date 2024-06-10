@@ -35,4 +35,19 @@ class BladeTest extends TestCase
         $view->assertSee('User has enough limit to create locations');
         $view->assertDontSee('User does not have enough limit to create locations');
     }
+
+    public function test_limit_directive_evaluates_true_with_limit_instance(): void
+    {
+        $limit = $this->createLimit();
+
+        $this->user->setLimit($limit);
+
+        $view = $this->view('index', [
+            'limit' => $limit,
+            'user' => $this->user,
+        ]);
+
+        $view->assertSee('User has enough limit to create locations');
+        $view->assertDontSee('User does not have enough limit to create locations');
+    }
 }

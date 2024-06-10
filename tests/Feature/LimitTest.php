@@ -144,6 +144,29 @@ class LimitTest extends TestCase
         $this->assertNotEquals($firstLimit->id, $secondLimit->id);
     }
 
+    public function test_same_limit_name_but_different_null_plan_can_be_created(): void
+    {
+        $data = [
+            'name' => 'locations',
+            'plan' => 'standard',
+            'allowed_amount' => 5.0,
+        ];
+
+        $firstLimit = app(LimitContract::class)::findOrCreate($data);
+
+        $data['plan'] = null;
+
+        $secondLimit = app(LimitContract::class)::findOrCreate($data);
+
+        $this->assertDatabaseCount(app(LimitContract::class), 2);
+
+        $this->assertModelExists($firstLimit);
+
+        $this->assertModelExists($secondLimit);
+
+        $this->assertNotEquals($firstLimit->id, $secondLimit->id);
+    }
+
     public function test_same_plan_but_different_limit_names_can_be_created(): void
     {
         $data = [
@@ -202,6 +225,31 @@ class LimitTest extends TestCase
         $firstLimit = app(LimitContract::class)::findOrCreate($data);
 
         $data['plan'] = 'pro';
+
+        $secondLimit = app(LimitContract::class)::findOrCreate($data);
+
+        $this->assertEquals(
+            $firstLimit->id,
+            app(LimitContract::class)::findByName($firstLimit->name, $firstLimit->plan)->id
+        );
+
+        $this->assertEquals(
+            $secondLimit->id,
+            app(LimitContract::class)::findByName($secondLimit->name, $secondLimit->plan)->id
+        );
+    }
+
+    public function test_same_limit_name_but_different_null_plan_can_be_retrieved_by_name_and_plan(): void
+    {
+        $data = [
+            'name' => 'locations',
+            'plan' => 'standard',
+            'allowed_amount' => 5.0,
+        ];
+
+        $firstLimit = app(LimitContract::class)::findOrCreate($data);
+
+        $data['plan'] = null;
 
         $secondLimit = app(LimitContract::class)::findOrCreate($data);
 

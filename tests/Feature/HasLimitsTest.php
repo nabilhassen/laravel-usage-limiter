@@ -35,7 +35,7 @@ class HasLimitsTest extends TestCase
         $limit = $this->createLimit();
 
         $this->assertException(
-            fn() => $this->user->setLimit($limit->name, usedAmount: 6),
+            fn() => $this->user->setLimit($limit->name, $limit->plan, usedAmount: 6),
             InvalidArgumentException::class
         );
     }
@@ -44,20 +44,20 @@ class HasLimitsTest extends TestCase
     {
         $limit = $this->createLimit();
 
-        $this->user->setLimit($limit->name, usedAmount: 3);
+        $this->user->setLimit($limit->name, $limit->plan, usedAmount: 3);
 
-        $this->assertEquals(3, $this->user->usedLimit($limit->name));
+        $this->assertEquals(3, $this->user->usedLimit($limit->name, $limit->plan));
     }
 
     public function test_can_set_limit_on_a_model(): void
     {
         $limit = $this->createLimit();
 
-        $this->user->setLimit($limit->name);
+        $this->user->setLimit($limit->name, $limit->plan);
 
-        $this->assertTrue($this->user->isLimitSet($limit->name));
+        $this->assertTrue($this->user->isLimitSet($limit->name, $limit->plan));
 
-        $this->assertEquals(0, $this->user->usedLimit($limit->name));
+        $this->assertEquals(0, $this->user->usedLimit($limit->name, $limit->plan));
 
         $this->assertEquals(now(), $this->user->getModelLimit($limit)->pivot->last_reset);
     }
@@ -68,24 +68,24 @@ class HasLimitsTest extends TestCase
 
         $productLimit = $this->createLimit(name: 'products');
 
-        $this->user->setLimit($limit->name);
+        $this->user->setLimit($limit->name, $limit->plan);
 
-        $this->user->setLimit($productLimit->name);
+        $this->user->setLimit($productLimit->name, $productLimit->plan);
 
         $this->assertEquals(2, $this->user->limitsRelationship()->count());
 
-        $this->assertTrue($this->user->isLimitSet($limit->name));
+        $this->assertTrue($this->user->isLimitSet($limit->name, $limit->plan));
 
-        $this->assertTrue($this->user->isLimitSet($productLimit->name));
+        $this->assertTrue($this->user->isLimitSet($productLimit->name, $productLimit->plan));
     }
 
     public function test_next_reset_is_null_when_limit_reset_frequency_is_null(): void
     {
         $limit = $this->createLimit(resetFrequency: null);
 
-        $this->user->setLimit($limit->name);
+        $this->user->setLimit($limit->name, $limit->plan);
 
-        $this->assertTrue($this->user->isLimitSet($limit->name));
+        $this->assertTrue($this->user->isLimitSet($limit->name, $limit->plan));
 
         $this->assertEquals(
             null,
@@ -97,9 +97,9 @@ class HasLimitsTest extends TestCase
     {
         $limit = $this->createLimit();
 
-        $this->user->setLimit($limit->name);
+        $this->user->setLimit($limit->name, $limit->plan);
 
-        $this->assertTrue($this->user->isLimitSet($limit->name));
+        $this->assertTrue($this->user->isLimitSet($limit->name, $limit->plan));
 
         $this->assertEquals(
             now(),
@@ -116,40 +116,40 @@ class HasLimitsTest extends TestCase
     {
         $limit = $this->createLimit();
 
-        $this->user->setLimit($limit->name);
+        $this->user->setLimit($limit->name, $limit->plan);
 
-        $this->assertTrue($this->user->isLimitSet($limit->name));
+        $this->assertTrue($this->user->isLimitSet($limit->name, $limit->plan));
     }
 
     public function test_limit_is_not_set_on_a_model(): void
     {
         $limit = $this->createLimit();
 
-        $this->assertFalse($this->user->isLimitSet($limit->name));
+        $this->assertFalse($this->user->isLimitSet($limit->name, $limit->plan));
     }
 
     public function test_can_unset_limit_off_of_a_model(): void
     {
         $limit = $this->createLimit();
 
-        $this->user->setLimit($limit->name);
+        $this->user->setLimit($limit->name, $limit->plan);
 
-        $this->user->unsetLimit($limit->name);
+        $this->user->unsetLimit($limit->name, $limit->plan);
 
-        $this->assertTrue(!$this->user->isLimitSet($limit->name));
+        $this->assertTrue(!$this->user->isLimitSet($limit->name, $limit->plan));
     }
 
     public function test_model_can_consume_limit(): void
     {
         $limit = $this->createLimit();
 
-        $this->user->setLimit($limit->name);
+        $this->user->setLimit($limit->name, $limit->plan);
 
-        $this->user->useLimit($limit->name);
+        $this->user->useLimit($limit->name, $limit->plan);
 
-        $this->assertEquals(1.0, $this->user->usedLimit($limit->name));
+        $this->assertEquals(1.0, $this->user->usedLimit($limit->name, $limit->plan));
 
-        $this->assertEquals(4.0, $this->user->remainingLimit($limit->name));
+        $this->assertEquals(4.0, $this->user->remainingLimit($limit->name, $limit->plan));
     }
 
     public function test_model_can_consume_multiple_limits(): void
@@ -158,74 +158,74 @@ class HasLimitsTest extends TestCase
 
         $productLimit = $this->createLimit(name: 'products');
 
-        $this->user->setLimit($limit->name);
+        $this->user->setLimit($limit->name, $limit->plan);
 
-        $this->user->useLimit($limit->name);
+        $this->user->useLimit($limit->name, $limit->plan);
 
-        $this->user->setLimit($productLimit->name);
+        $this->user->setLimit($productLimit->name, $productLimit->plan);
 
-        $this->user->useLimit($productLimit->name, 3.0);
+        $this->user->useLimit($productLimit->name, $productLimit->plan, 3.0);
 
-        $this->assertEquals(1.0, $this->user->usedLimit($limit->name));
+        $this->assertEquals(1.0, $this->user->usedLimit($limit->name, $limit->plan));
 
-        $this->assertEquals(4.0, $this->user->remainingLimit($limit->name));
+        $this->assertEquals(4.0, $this->user->remainingLimit($limit->name, $limit->plan));
 
-        $this->assertEquals(3.0, $this->user->usedLimit($productLimit->name));
+        $this->assertEquals(3.0, $this->user->usedLimit($productLimit->name, $productLimit->plan));
 
-        $this->assertEquals(2.0, $this->user->remainingLimit($productLimit->name));
+        $this->assertEquals(2.0, $this->user->remainingLimit($productLimit->name, $productLimit->plan));
     }
 
     public function test_model_can_unconsume_limit(): void
     {
         $limit = $this->createLimit();
 
-        $this->user->setLimit($limit->name);
+        $this->user->setLimit($limit->name, $limit->plan);
 
-        $this->user->useLimit($limit->name, 2.0);
+        $this->user->useLimit($limit->name, $limit->plan, 2.0);
 
-        $this->assertEquals(2.0, $this->user->usedLimit($limit->name));
+        $this->assertEquals(2.0, $this->user->usedLimit($limit->name, $limit->plan));
 
-        $this->assertEquals(3.0, $this->user->remainingLimit($limit->name));
+        $this->assertEquals(3.0, $this->user->remainingLimit($limit->name, $limit->plan));
 
-        $this->user->unuseLimit($limit->name);
+        $this->user->unuseLimit($limit->name, $limit->plan);
 
-        $this->assertEquals(1.0, $this->user->usedLimit($limit->name));
+        $this->assertEquals(1.0, $this->user->usedLimit($limit->name, $limit->plan));
 
-        $this->assertEquals(4.0, $this->user->remainingLimit($limit->name));
+        $this->assertEquals(4.0, $this->user->remainingLimit($limit->name, $limit->plan));
     }
 
     public function test_model_can_reset_limit(): void
     {
         $limit = $this->createLimit();
 
-        $this->user->setLimit($limit->name);
+        $this->user->setLimit($limit->name, $limit->plan);
 
-        $this->user->useLimit($limit->name);
+        $this->user->useLimit($limit->name, $limit->plan);
 
-        $this->assertEquals(1.0, $this->user->usedLimit($limit->name));
+        $this->assertEquals(1.0, $this->user->usedLimit($limit->name, $limit->plan));
 
-        $this->assertEquals(4.0, $this->user->remainingLimit($limit->name));
+        $this->assertEquals(4.0, $this->user->remainingLimit($limit->name, $limit->plan));
 
-        $this->user->resetLimit($limit->name);
+        $this->user->resetLimit($limit->name, $limit->plan);
 
-        $this->assertEquals(0.0, $this->user->usedLimit($limit->name));
+        $this->assertEquals(0.0, $this->user->usedLimit($limit->name, $limit->plan));
 
-        $this->assertEquals(5.0, $this->user->remainingLimit($limit->name));
+        $this->assertEquals(5.0, $this->user->remainingLimit($limit->name, $limit->plan));
     }
 
     public function test_model_cannot_exceed_limit(): void
     {
         $limit = $this->createLimit();
 
-        $this->user->setLimit($limit->name);
+        $this->user->setLimit($limit->name, $limit->plan);
 
-        $this->user->useLimit($limit->name, 5.0);
+        $this->user->useLimit($limit->name, $limit->plan, 5.0);
 
-        $this->assertFalse($this->user->hasEnoughLimit($limit->name));
+        $this->assertFalse($this->user->hasEnoughLimit($limit->name, $limit->plan));
 
-        $this->user->unuseLimit($limit->name, 3.0);
+        $this->user->unuseLimit($limit->name, $limit->plan, 3.0);
 
-        $this->assertTrue($this->user->hasEnoughLimit($limit->name));
+        $this->assertTrue($this->user->hasEnoughLimit($limit->name, $limit->plan));
     }
 
     public function test_used_amount_is_always_less_than_allowed_amount(): void
@@ -233,11 +233,11 @@ class HasLimitsTest extends TestCase
         $limit = $this->createLimit();
 
         $this->assertTrue(
-            $this->user->ensureUsedAmountIsLessThanAllowedAmount($limit->name, 4)
+            $this->user->ensureUsedAmountIsLessThanAllowedAmount($limit->name, $limit->plan, 4)
         );
 
         $this->assertFalse(
-            $this->user->ensureUsedAmountIsLessThanAllowedAmount($limit->name, 6)
+            $this->user->ensureUsedAmountIsLessThanAllowedAmount($limit->name, $limit->plan, 6)
         );
     }
 
@@ -245,22 +245,22 @@ class HasLimitsTest extends TestCase
     {
         $limit = $this->createLimit();
 
-        $this->user->setLimit($limit->name);
+        $this->user->setLimit($limit->name, $limit->plan);
 
-        $this->user->useLimit($limit->name, 2.0);
+        $this->user->useLimit($limit->name, $limit->plan, 2.0);
 
-        $this->assertEquals(2, $this->user->usedLimit($limit->name));
+        $this->assertEquals(2, $this->user->usedLimit($limit->name, $limit->plan));
     }
 
     public function test_remaining_amount_is_valid(): void
     {
         $limit = $this->createLimit();
 
-        $this->user->setLimit($limit->name);
+        $this->user->setLimit($limit->name, $limit->plan);
 
-        $this->user->useLimit($limit->name, 2.0);
+        $this->user->useLimit($limit->name, $limit->plan, 2.0);
 
-        $this->assertEquals(3, $this->user->remainingLimit($limit->name));
+        $this->assertEquals(3, $this->user->remainingLimit($limit->name, $limit->plan));
     }
 
     public function test_exception_is_thrown_if_limit_is_not_set_on_a_model(): void
@@ -268,7 +268,7 @@ class HasLimitsTest extends TestCase
         $limit = $this->createLimit();
 
         $this->assertException(
-            fn() => $this->user->getModelLimit($limit->name),
+            fn() => $this->user->getModelLimit($limit->name, $limit->plan),
             LimitNotSetOnModel::class
         );
     }
@@ -277,16 +277,16 @@ class HasLimitsTest extends TestCase
     {
         $limit = $this->createLimit();
 
-        $this->user->setLimit($limit->name);
+        $this->user->setLimit($limit->name, $limit->plan);
 
-        $this->assertEquals($limit->id, $this->user->getModelLimit($limit->name)->id);
+        $this->assertEquals($limit->id, $this->user->getModelLimit($limit->name, $limit->plan)->id);
     }
 
     public function test_retrieving_limit_set_on_a_model_by_limit_object(): void
     {
         $limit = $this->createLimit();
 
-        $this->user->setLimit($limit->name);
+        $this->user->setLimit($limit->name, $limit->plan);
 
         $this->assertEquals($limit->id, $this->user->getModelLimit($limit)->id);
     }
@@ -295,16 +295,16 @@ class HasLimitsTest extends TestCase
     {
         $limit = $this->createLimit();
 
-        $this->user->setLimit($limit->name);
+        $this->user->setLimit($limit->name, $limit->plan);
 
-        $this->assertEquals($limit->id, $this->user->getLimit($limit->name)->id);
+        $this->assertEquals($limit->id, $this->user->getLimit($limit->name, $limit->plan)->id);
     }
 
     public function test_retrieving_limit_by_limit_object(): void
     {
         $limit = $this->createLimit();
 
-        $this->user->setLimit($limit->name);
+        $this->user->setLimit($limit->name, $limit->plan);
 
         $this->assertEquals($limit->id, $this->user->getLimit($limit)->id);
     }
@@ -314,8 +314,8 @@ class HasLimitsTest extends TestCase
         $limit = $this->createLimit();
         $productLimit = $this->createLimit(name: 'products');
 
-        $this->user->setLimit($limit->name);
-        $this->user->setLimit($productLimit->name);
+        $this->user->setLimit($limit->name, $limit->plan);
+        $this->user->setLimit($productLimit->name, $productLimit->plan);
 
         $this->user->useLimit($limit);
 
@@ -336,11 +336,11 @@ class HasLimitsTest extends TestCase
     {
         $limit = $this->createLimit();
 
-        $this->user->setLimit($limit->name);
+        $this->user->setLimit($limit->name, $limit->plan);
 
         $this->user->useLimit($limit);
 
-        $report = $this->user->limitUsageReport($limit->name);
+        $report = $this->user->limitUsageReport($limit->name, $limit->plan);
 
         $this->assertCount(1, $report);
 
@@ -353,7 +353,7 @@ class HasLimitsTest extends TestCase
     {
         $limit = $this->createLimit();
 
-        $this->user->setLimit($limit->name);
+        $this->user->setLimit($limit->name, $limit->plan);
 
         $this->user->useLimit($limit);
 

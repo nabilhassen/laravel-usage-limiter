@@ -119,7 +119,7 @@ class CommandTest extends TestCase
 
         $this->user->setLimit($limit);
 
-        $this->user->useLimit($limit, 2.0);
+        $this->user->useLimit($limit, amount: 2.0);
 
         $this->assertEquals(3, $this->user->remainingLimit($limit));
 
@@ -147,7 +147,7 @@ class CommandTest extends TestCase
 
         $this->user->setLimit($limit);
 
-        $this->user->useLimit($limit, 2.0);
+        $this->user->useLimit($limit, amount: 2.0);
 
         $this->assertEquals(3, $this->user->remainingLimit($limit));
 

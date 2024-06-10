@@ -58,33 +58,33 @@ trait HasLimits
         return true;
     }
 
-    public function isLimitSet(string|ContractsLimit $name): bool
+    public function isLimitSet(string|ContractsLimit $name, ?string $plan = null): bool
     {
-        $limit = $this->getLimit($name);
+        $limit = $this->getLimit($name, $plan);
 
         return $this->limitsRelationship()->where('name', $limit->name)->exists();
     }
 
-    public function unsetLimit(string|ContractsLimit $name): bool
+    public function unsetLimit(string|ContractsLimit $name, ?string $plan = null): bool
     {
-        $limit = $this->getLimit($name);
+        $limit = $this->getLimit($name, $plan);
 
         $this->limitsRelationship()->detach($limit->id);
 
         return true;
     }
 
-    public function useLimit(string|ContractsLimit $name, float $amount = 1.0): bool
+    public function useLimit(string|ContractsLimit $name, ?string $plan = null, float $amount = 1.0): bool
     {
-        $limit = $this->getModelLimit($name);
+        $limit = $this->getModelLimit($name, $plan);
 
         $newUsedAmount = $limit->pivot->used_amount + $amount;
 
-        if (!$this->hasEnoughLimit($name)) {
+        if (!$this->hasEnoughLimit($name, $plan)) {
             return false;
         }
 
-        if (!$this->ensureUsedAmountIsLessThanAllowedAmount($name, $newUsedAmount)) {
+        if (!$this->ensureUsedAmountIsLessThanAllowedAmount($name, $plan, $newUsedAmount)) {
             return false;
         }
 
@@ -95,13 +95,13 @@ trait HasLimits
         return true;
     }
 
-    public function unuseLimit(string|ContractsLimit $name, float $amount = 1.0): bool
+    public function unuseLimit(string|ContractsLimit $name, ?string $plan = null, float $amount = 1.0): bool
     {
-        $limit = $this->getModelLimit($name);
+        $limit = $this->getModelLimit($name, $plan);
 
         $newUsedAmount = $limit->pivot->used_amount - $amount;
 
-        if (!$this->ensureUsedAmountIsLessThanAllowedAmount($name, $newUsedAmount)) {
+        if (!$this->ensureUsedAmountIsLessThanAllowedAmount($name, $plan, $newUsedAmount)) {
             return false;
         }
 
@@ -112,9 +112,9 @@ trait HasLimits
         return true;
     }
 
-    public function resetLimit(string|ContractsLimit $name): bool
+    public function resetLimit(string|ContractsLimit $name, ?string $plan = null): bool
     {
-        $limit = $this->getLimit($name);
+        $limit = $this->getLimit($name, $plan);
 
         $this->limitsRelationship()->updateExistingPivot($limit->id, [
             'used_amount' => 0,
@@ -123,39 +123,39 @@ trait HasLimits
         return true;
     }
 
-    public function hasEnoughLimit(string|ContractsLimit $name): bool
+    public function hasEnoughLimit(string|ContractsLimit $name, ?string $plan = null): bool
     {
-        $limit = $this->getModelLimit($name);
+        $limit = $this->getModelLimit($name, $plan);
 
         $usedAmount = $limit->pivot->used_amount;
 
         return $limit->allowed_amount > $usedAmount;
     }
 
-    public function ensureUsedAmountIsLessThanAllowedAmount(string|ContractsLimit $name, float $usedAmount): bool
+    public function ensureUsedAmountIsLessThanAllowedAmount(string|ContractsLimit $name, ?string $plan = null, float $usedAmount): bool
     {
-        $limit = $this->getLimit($name);
+        $limit = $this->getLimit($name, $plan);
 
         return $usedAmount >= 0 && $usedAmount <= $limit->allowed_amount;
     }
 
-    public function usedLimit(string|ContractsLimit $name): float
+    public function usedLimit(string|ContractsLimit $name, ?string $plan = null): float
     {
-        $limit = $this->getModelLimit($name);
+        $limit = $this->getModelLimit($name, $plan);
 
         return $limit->pivot->used_amount;
     }
 
-    public function remainingLimit(string|ContractsLimit $name): float
+    public function remainingLimit(string|ContractsLimit $name, ?string $plan = null): float
     {
-        $limit = $this->getModelLimit($name);
+        $limit = $this->getModelLimit($name, $plan);
 
         return $limit->allowed_amount - $limit->pivot->used_amount;
     }
 
-    public function getModelLimit(string|ContractsLimit $name)
+    public function getModelLimit(string|ContractsLimit $name, ?string $plan = null)
     {
-        $limit = $this->getLimit($name);
+        $limit = $this->getLimit($name, $plan);
 
         $modelLimit = $this->limitsRelationship()->firstWhere('name', $limit->name);
 
@@ -183,9 +183,9 @@ trait HasLimits
         return config('limit.relationship');
     }
 
-    public function limitUsageReport(string|ContractsLimit $name = null): array
+    public function limitUsageReport(string|ContractsLimit $name = null, ?string $plan = null): array
     {
-        $modelLimits = !is_null($name) ? collect([$this->getModelLimit($name)]) : $this->limitsRelationship()->get();
+        $modelLimits = !is_null($name) ? collect([$this->getModelLimit($name, $plan)]) : $this->limitsRelationship()->get();
 
         return
         $modelLimits
