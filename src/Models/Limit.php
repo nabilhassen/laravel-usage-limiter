@@ -6,13 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
-use NabilHassen\LaravelUsageLimiter\Contracts\Limit as ContractsLimit;
+use NabilHassen\LaravelUsageLimiter\Contracts\Limit as LimitContract;
 use NabilHassen\LaravelUsageLimiter\Exceptions\LimitAlreadyExists;
 use NabilHassen\LaravelUsageLimiter\Exceptions\LimitDoesNotExist;
 use NabilHassen\LaravelUsageLimiter\LimitManager;
 use NabilHassen\LaravelUsageLimiter\Traits\RefreshCache;
 
-class Limit extends Model implements ContractsLimit
+class Limit extends Model implements LimitContract
 {
     use RefreshCache, SoftDeletes;
 
@@ -38,12 +38,12 @@ class Limit extends Model implements ContractsLimit
         $this->table = config('limit.tables.limits') ?: parent::getTable();
     }
 
-    public static function create(array $data): ContractsLimit
+    public static function create(array $data): LimitContract
     {
         return static::findOrCreate($data, true);
     }
 
-    public static function findOrCreate(array $data, bool $throw = false): ContractsLimit
+    public static function findOrCreate(array $data, bool $throw = false): LimitContract
     {
         $data = static::validateArgs($data);
 
@@ -90,8 +90,12 @@ class Limit extends Model implements ContractsLimit
         return $data;
     }
 
-    public static function findByName(string $name, ?string $plan = null): ContractsLimit
+    public static function findByName(string|LimitContract $name, ?string $plan = null): LimitContract
     {
+        if (is_object($name)) {
+            return $name;
+        }
+
         $limit = app(LimitManager::class)->getLimit(compact('name', 'plan'));
 
         if (!$limit) {
@@ -101,8 +105,12 @@ class Limit extends Model implements ContractsLimit
         return $limit;
     }
 
-    public static function findById(int $id): ContractsLimit
+    public static function findById(int|LimitContract $id): LimitContract
     {
+        if (is_object($id)) {
+            return $id;
+        }
+
         $limit = app(LimitManager::class)->getLimit(compact('id'));
 
         if (!$limit) {

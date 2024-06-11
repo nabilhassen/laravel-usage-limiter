@@ -4,10 +4,10 @@ namespace NabilHassen\LaravelUsageLimiter\Tests\Feature;
 
 use Illuminate\Support\Str;
 use InvalidArgumentException;
-use NabilHassen\LaravelUsageLimiter\Contracts\Limit as LimitContract;
-use NabilHassen\LaravelUsageLimiter\Exceptions\LimitAlreadyExists;
-use NabilHassen\LaravelUsageLimiter\Exceptions\LimitDoesNotExist;
 use NabilHassen\LaravelUsageLimiter\Tests\TestCase;
+use NabilHassen\LaravelUsageLimiter\Exceptions\LimitDoesNotExist;
+use NabilHassen\LaravelUsageLimiter\Exceptions\LimitAlreadyExists;
+use NabilHassen\LaravelUsageLimiter\Contracts\Limit as LimitContract;
 
 class LimitTest extends TestCase
 {
@@ -241,6 +241,19 @@ class LimitTest extends TestCase
             $limit->id,
             app(LimitContract::class)::findByName($limit->name, $limit->plan)->id
         );
+    }
+
+    public function test_retrieving_limit_by_limit_instance(): void
+    {
+        $data = [
+            'name' => 'locations',
+            'plan' => 'standard',
+            'allowed_amount' => 5.0,
+        ];
+
+        $limit = app(LimitContract::class)::findOrCreate($data);
+
+        $this->assertEquals($limit->id, app(LimitContract::class)->findByName($limit)->id);
     }
 
     public function test_same_limit_name_but_different_plan_can_be_retrieved_by_name_and_plan(): void

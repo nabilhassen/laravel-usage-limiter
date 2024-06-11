@@ -291,24 +291,6 @@ class HasLimitsTest extends TestCase
         $this->assertEquals($limit->id, $this->user->getModelLimit($limit)->id);
     }
 
-    public function test_retrieving_limit_by_limit_name(): void
-    {
-        $limit = $this->createLimit();
-
-        $this->user->setLimit($limit->name, $limit->plan);
-
-        $this->assertEquals($limit->id, $this->user->getLimit($limit->name, $limit->plan)->id);
-    }
-
-    public function test_retrieving_limit_by_limit_object(): void
-    {
-        $limit = $this->createLimit();
-
-        $this->user->setLimit($limit->name, $limit->plan);
-
-        $this->assertEquals($limit->id, $this->user->getLimit($limit)->id);
-    }
-
     public function test_can_get_all_limits_usage_report(): void
     {
         $limit = $this->createLimit();
