@@ -35,6 +35,10 @@ abstract class TestCase extends Testbench
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations/');
 
         $this->migrateCacheTable();
+
+        $this->migrateUsersTable();
+
+        $this->artisan('migrate');
     }
 
     protected function getPackageProviders($app)
@@ -77,8 +81,21 @@ abstract class TestCase extends Testbench
                 $table->text('value');
                 $table->integer('expiration');
             });
+        }
+    }
 
-            $this->artisan('migrate');
+    protected static function migrateUsersTable(): void
+    {
+        if (!Schema::hasTable('users')) {
+            Schema::create('users', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('email')->unique();
+                $table->timestamp('email_verified_at')->nullable();
+                $table->string('password');
+                $table->rememberToken();
+                $table->timestamps();
+            });
         }
     }
 }
