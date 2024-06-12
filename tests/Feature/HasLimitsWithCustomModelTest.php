@@ -17,7 +17,6 @@ class HasLimitsWithCustomModelTest extends HasLimitsTest
             $config->set('limit.tables.limits', 'restricts');
             $config->set('limit.tables.model_has_limits', 'model_has_restricts');
             $config->set('limit.columns.limit_pivot_key', 'restrict_id');
-            $config->set('limit.columns.model_morph_key', 'model_id');
         });
     }
 

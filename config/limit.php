@@ -49,13 +49,6 @@ return [
          */
 
         'limit_pivot_key' => 'limit_id',
-
-        /*
-         * Change this if you want to name the related model primary key other than
-         * `model_id`.
-         */
-
-        'model_morph_key' => 'model_id',
     ],
 
     /* Cache-specific settings */
@@ -63,8 +56,8 @@ return [
     'cache' => [
 
         /*
-         * By default all limits are cached for 24 hours to speed up performance.
-         * When limits are updated the cache is flushed automatically.
+         * By default all limits are cached for 24 hours to speed up performance. When 
+         * limits are created/updated/deleted the cache is flushed automatically.
          */
 
         'expiration_time' => \DateInterval::createFromDateString('24 hours'),

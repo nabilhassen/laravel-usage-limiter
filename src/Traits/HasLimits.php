@@ -21,7 +21,7 @@ trait HasLimits
                     config('limit.models.limit'),
                     'model',
                     config('limit.tables.model_has_limits'),
-                    config('limit.columns.model_morph_key'),
+                    'model_id',
                     config('limit.columns.limit_pivot_key'),
                 )
                 ->withPivot(['used_amount', 'last_reset', 'next_reset'])
