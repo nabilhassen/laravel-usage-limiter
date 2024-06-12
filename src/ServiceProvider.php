@@ -8,6 +8,7 @@ use Illuminate\Support\ServiceProvider as SupportServiceProvider;
 use NabilHassen\LaravelUsageLimiter\Commands\CreateLimit;
 use NabilHassen\LaravelUsageLimiter\Commands\DeleteLimit;
 use NabilHassen\LaravelUsageLimiter\Commands\ListLimits;
+use NabilHassen\LaravelUsageLimiter\Commands\ResetCache;
 use NabilHassen\LaravelUsageLimiter\Commands\ResetLimitUsages;
 use NabilHassen\LaravelUsageLimiter\Contracts\Limit;
 use NabilHassen\LaravelUsageLimiter\LimitManager;
@@ -44,6 +45,7 @@ class ServiceProvider extends SupportServiceProvider
                 DeleteLimit::class,
                 ListLimits::class,
                 ResetLimitUsages::class,
+                ResetCache::class
             ]);
         }
     }

@@ -2,6 +2,7 @@
 
 namespace NabilHassen\LaravelUsageLimiter\Tests\Feature;
 
+use Illuminate\Support\Facades\DB;
 use NabilHassen\LaravelUsageLimiter\Contracts\Limit;
 use NabilHassen\LaravelUsageLimiter\LimitManager;
 use NabilHassen\LaravelUsageLimiter\Tests\TestCase;
@@ -133,5 +134,34 @@ class CommandTest extends TestCase
         $this->artisan('limit:reset')->assertSuccessful()->expectsOutputToContain('0 usages/rows');
 
         $this->assertEquals(3, $this->user->remainingLimit($limit));
+    }
+
+    public function test_reset_cache_limit_resets_cache(): void
+    {
+        $this->createLimit();
+
+        $this->createLimit(name: 'products');
+
+        $this->createLimit(name: 'users');
+
+        DB::flushQueryLog();
+
+        app(LimitManager::class)->getLimits();
+
+        $this->assertQueriesExecuted(1);
+
+        DB::flushQueryLog();
+
+        app(LimitManager::class)->getLimits();
+
+        $this->assertQueriesExecuted(0);
+
+        DB::flushQueryLog();
+
+        $this->artisan('limit:cache-reset')->assertSuccessful();
+
+        app(LimitManager::class)->getLimits();
+
+        $this->assertQueriesExecuted(1);
     }
 }
