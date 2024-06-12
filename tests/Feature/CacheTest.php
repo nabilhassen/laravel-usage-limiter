@@ -10,15 +10,9 @@ use NabilHassen\LaravelUsageLimiter\Tests\TestCase;
 
 class CacheTest extends TestCase
 {
-    protected $initQueryCounts;
-
     protected function setUp(): void
     {
         parent::setUp();
-
-        $this->initQueryCounts = 0;
-
-        DB::enableQueryLog();
 
         $this->createLimit();
     }
@@ -102,13 +96,5 @@ class CacheTest extends TestCase
         app(LimitManager::class)->getLimits();
 
         $this->assertQueriesExecuted(1);
-    }
-
-    protected function assertQueriesExecuted(int $expected): void
-    {
-        $this->assertCount(
-            $this->initQueryCounts + $expected,
-            DB::getQueryLog()
-        );
     }
 }

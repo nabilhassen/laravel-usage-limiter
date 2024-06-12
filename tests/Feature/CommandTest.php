@@ -107,7 +107,7 @@ class CommandTest extends TestCase
 
         $this->artisan('limit:reset')->assertSuccessful();
 
-        $this->assertEquals(5, $this->user->remainingLimit($limit));
+        $this->assertEquals(5, $this->user->refresh()->remainingLimit($limit));
 
         $this->assertEquals(
             app(LimitManager::class)->getNextReset($limit->reset_frequency, now()),

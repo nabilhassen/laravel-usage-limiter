@@ -7,6 +7,7 @@ use function Orchestra\Testbench\workbench_path;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithViews;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use NabilHassen\LaravelUsageLimiter\Contracts\Limit;
 use NabilHassen\LaravelUsageLimiter\ServiceProvider;
@@ -20,9 +21,13 @@ abstract class TestCase extends Testbench
 
     protected User $user;
 
+    protected int $initQueryCounts = 0;
+
     protected function setUp(): void
     {
         parent::setUp();
+
+        DB::enableQueryLog();
 
         $this->user = User::factory()->create();
 
@@ -53,7 +58,7 @@ abstract class TestCase extends Testbench
         $test();
     }
 
-    protected function createLimit(string $name = 'locations', ?string $plan = 'standard', float|int $allowedAmount = 5.0, ?string $resetFrequency = 'every month'): Limit
+    protected function createLimit(string $name = 'locations', ?string $plan = 'standard', float | int $allowedAmount = 5.0, ?string $resetFrequency = 'every month'): Limit
     {
         return app(Limit::class)::findOrCreate([
             'name' => $name,
@@ -61,5 +66,13 @@ abstract class TestCase extends Testbench
             'allowed_amount' => $allowedAmount,
             'reset_frequency' => $resetFrequency,
         ]);
+    }
+
+    protected function assertQueriesExecuted(int $expected): void
+    {
+        $this->assertCount(
+            $this->initQueryCounts + $expected,
+            DB::getQueryLog()
+        );
     }
 }

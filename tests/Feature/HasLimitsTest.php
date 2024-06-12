@@ -3,6 +3,7 @@
 namespace NabilHassen\LaravelUsageLimiter\Tests\Feature;
 
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use NabilHassen\LaravelUsageLimiter\Exceptions\LimitNotSetOnModel;
 use NabilHassen\LaravelUsageLimiter\LimitManager;
@@ -232,6 +233,8 @@ class HasLimitsTest extends TestCase
     {
         $limit = $this->createLimit();
 
+        $this->user->setLimit($limit->name, $limit->plan);
+
         $this->assertTrue(
             $this->user->ensureUsedAmountIsLessThanAllowedAmount($limit->name, $limit->plan, 4)
         );
@@ -346,5 +349,64 @@ class HasLimitsTest extends TestCase
         $this->assertEquals(5, $report[$limit->name]['allowed_amount']);
         $this->assertEquals(1, $report[$limit->name]['used_amount']);
         $this->assertEquals(4, $report[$limit->name]['remaining_amount']);
+    }
+
+    public function test_get_model_limits_returns_model_limits_collection(): void
+    {
+        $limit = $this->createLimit();
+
+        $this->createLimit(name: 'products');
+
+        $this->user->setLimit($limit);
+
+        $this->assertCount(
+            $this->user->limitsRelationship()->count(),
+            $this->user->getModelLimits()
+        );
+    }
+
+    public function test_model_limits_are_cached(): void
+    {
+        $limit = $this->createLimit();
+
+        $this->user->setLimit($limit);
+
+        DB::flushQueryLog();
+
+        $this->user->isLimitSet($limit);
+        $this->user->hasEnoughLimit($limit);
+        $this->user->usedLimit($limit);
+        $this->user->remainingLimit($limit);
+        $this->user->getModelLimit($limit);
+        $this->user->getModelLimits();
+
+        $this->assertQueriesExecuted(1);
+    }
+
+    public function test_unload_limits_relationship_is_unsetting_relationship(): void
+    {
+        $limit = $this->createLimit();
+
+        $this->user->setLimit($limit);
+
+        DB::flushQueryLog();
+
+        $this->user->isLimitSet($limit);
+
+        $this->assertQueriesExecuted(1);
+
+        DB::flushQueryLog();
+
+        $this->user->isLimitSet($limit);
+
+        $this->assertQueriesExecuted(0);
+
+        DB::flushQueryLog();
+
+        $this->user->unloadLimitsRelationship();
+
+        $this->user->isLimitSet($limit);
+
+        $this->assertQueriesExecuted(1);
     }
 }

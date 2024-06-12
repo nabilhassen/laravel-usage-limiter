@@ -4,6 +4,7 @@ namespace NabilHassen\LaravelUsageLimiter\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use NabilHassen\LaravelUsageLimiter\Contracts\Limit as LimitContract;
@@ -28,7 +29,7 @@ trait HasLimits
         });
     }
 
-    public function setLimit(string|LimitContract $name, string $plan = null, float|int $usedAmount = 0.0): bool
+    public function setLimit(string|LimitContract $name, ?string $plan = null, float|int $usedAmount = 0.0): bool
     {
         $limit = app(LimitContract::class)::findByName($name, $plan);
 
@@ -55,6 +56,8 @@ trait HasLimits
             }
         });
 
+        $this->unloadLimitsRelationship();
+
         return true;
     }
 
@@ -62,14 +65,16 @@ trait HasLimits
     {
         $limit = app(LimitContract::class)::findByName($name, $plan);
 
-        return $this->limitsRelationship()->where('name', $limit->name)->exists();
+        return $this->getModelLimits()->where('name', $limit->name)->isNotEmpty();
     }
 
     public function unsetLimit(string|LimitContract $name, ?string $plan = null): bool
     {
-        $limit = app(LimitContract::class)::findByName($name, $plan);
+        $limit = $this->getModelLimit($name, $plan);
 
         $this->limitsRelationship()->detach($limit->id);
+
+        $this->unloadLimitsRelationship();
 
         return true;
     }
@@ -92,6 +97,8 @@ trait HasLimits
             'used_amount' => $newUsedAmount,
         ]);
 
+        $this->unloadLimitsRelationship();
+
         return true;
     }
 
@@ -109,16 +116,20 @@ trait HasLimits
             'used_amount' => $newUsedAmount,
         ]);
 
+        $this->unloadLimitsRelationship();
+
         return true;
     }
 
     public function resetLimit(string|LimitContract $name, ?string $plan = null): bool
     {
-        $limit = app(LimitContract::class)::findByName($name, $plan);
+        $limit = $this->getModelLimit($name, $plan);
 
         $this->limitsRelationship()->updateExistingPivot($limit->id, [
             'used_amount' => 0,
         ]);
+
+        $this->unloadLimitsRelationship();
 
         return true;
     }
@@ -134,7 +145,7 @@ trait HasLimits
 
     public function ensureUsedAmountIsLessThanAllowedAmount(string|LimitContract $name, ?string $plan = null, float|int $usedAmount): bool
     {
-        $limit = app(LimitContract::class)::findByName($name, $plan);
+        $limit = $this->getModelLimit($name, $plan);
 
         return $usedAmount >= 0 && $usedAmount <= $limit->allowed_amount;
     }
@@ -154,16 +165,25 @@ trait HasLimits
     }
 
     public function getModelLimit(string|LimitContract $name, ?string $plan = null)
-    {
+    {        
         $limit = app(LimitContract::class)::findByName($name, $plan);
 
-        $modelLimit = $this->limitsRelationship()->firstWhere('name', $limit->name);
+        $modelLimit = $this->getModelLimits()->firstWhere('id', $limit->id);
 
         if (!$modelLimit) {
             throw new LimitNotSetOnModel($name);
         }
 
         return $modelLimit;
+    }
+
+    public function getModelLimits(): Collection
+    {
+        $relationshipName = static::getLimitsRelationship();
+
+        $this->loadMissing($relationshipName);
+
+        return $this->$relationshipName;
     }
 
     public function limitsRelationship(): MorphToMany
@@ -173,6 +193,13 @@ trait HasLimits
         return $this->$relationshipName();
     }
 
+    public function unloadLimitsRelationship() : void
+    {
+        $relationshipName = static::getLimitsRelationship();
+
+        $this->unsetRelation($relationshipName);
+    }
+
     private static function getLimitsRelationship(): string
     {
         return config('limit.relationship');
@@ -180,7 +207,7 @@ trait HasLimits
 
     public function limitUsageReport(string|LimitContract $name = null, ?string $plan = null): array
     {
-        $modelLimits = !is_null($name) ? collect([$this->getModelLimit($name, $plan)]) : $this->limitsRelationship()->get();
+        $modelLimits = !is_null($name) ? collect([$this->getModelLimit($name, $plan)]) : $this->getModelLimits();
 
         return
         $modelLimits
