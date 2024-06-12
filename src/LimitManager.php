@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use InvalidArgumentException;
 use NabilHassen\LaravelUsageLimiter\Contracts\Limit;
+use NabilHassen\LaravelUsageLimiter\Exceptions\InvalidLimitResetFrequencyValue;
 
 class LimitManager
 {
@@ -51,8 +52,12 @@ class LimitManager
         $this->cache = Cache::store($cacheStore);
     }
 
-    public function getNextReset(string $limitResetFrequency, string | Carbon $lastReset): Carbon
+    public function getNextReset(string $limitResetFrequency, string|Carbon $lastReset): Carbon
     {
+        if ($this->limitClass->getResetFrequencyOptions()->doesntContain($limitResetFrequency)) {
+            throw new InvalidLimitResetFrequencyValue;
+        }
+
         $lastReset = Carbon::parse($lastReset);
 
         return match ($limitResetFrequency) {
@@ -66,7 +71,6 @@ class LimitManager
             'every quarter' => $lastReset->addQuarter(),
             'every six months' => $lastReset->addMonths(6),
             'every year' => $lastReset->addYear(),
-            default => $lastReset->addMonth()
         };
     }
 

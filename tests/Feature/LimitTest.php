@@ -2,12 +2,14 @@
 
 namespace NabilHassen\LaravelUsageLimiter\Tests\Feature;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
-use NabilHassen\LaravelUsageLimiter\Tests\TestCase;
-use NabilHassen\LaravelUsageLimiter\Exceptions\LimitDoesNotExist;
-use NabilHassen\LaravelUsageLimiter\Exceptions\LimitAlreadyExists;
 use NabilHassen\LaravelUsageLimiter\Contracts\Limit as LimitContract;
+use NabilHassen\LaravelUsageLimiter\Exceptions\InvalidLimitResetFrequencyValue;
+use NabilHassen\LaravelUsageLimiter\Exceptions\LimitAlreadyExists;
+use NabilHassen\LaravelUsageLimiter\Exceptions\LimitDoesNotExist;
+use NabilHassen\LaravelUsageLimiter\Tests\TestCase;
 
 class LimitTest extends TestCase
 {
@@ -92,7 +94,7 @@ class LimitTest extends TestCase
 
         $this->assertException(
             fn() => app(LimitContract::class)::create($data),
-            InvalidArgumentException::class
+            InvalidLimitResetFrequencyValue::class
         );
     }
 
@@ -102,7 +104,7 @@ class LimitTest extends TestCase
             'name' => 'locations',
             'plan' => 'standard',
             'allowed_amount' => 5.0,
-            'reset_frequency' => collect(app(LimitContract::class)::$resetFrequencyPossibleValues)->random(),
+            'reset_frequency' => collect(app(LimitContract::class)->getResetFrequencyOptions())->random(),
         ];
 
         $limit = app(LimitContract::class)::create($data);
@@ -402,5 +404,12 @@ class LimitTest extends TestCase
             2,
             app(LimitContract::class)::findByName($limit->name, $limit->plan)->allowed_amount
         );
+    }
+
+    public function test_get_reset_frequency_options_returns_collection(): void
+    {
+        $this->assertInstanceOf(Collection::class, app(LimitContract::class)->getResetFrequencyOptions());
+
+        $this->assertCount(10, app(LimitContract::class)->getResetFrequencyOptions());
     }
 }

@@ -5,8 +5,10 @@ namespace NabilHassen\LaravelUsageLimiter\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use NabilHassen\LaravelUsageLimiter\Contracts\Limit as LimitContract;
+use NabilHassen\LaravelUsageLimiter\Exceptions\InvalidLimitResetFrequencyValue;
 use NabilHassen\LaravelUsageLimiter\Exceptions\LimitAlreadyExists;
 use NabilHassen\LaravelUsageLimiter\Exceptions\LimitDoesNotExist;
 use NabilHassen\LaravelUsageLimiter\LimitManager;
@@ -18,7 +20,7 @@ class Limit extends Model implements LimitContract
 
     protected $guarded = ['id', 'created_at', 'updated_at', 'deleted_at'];
 
-    public static array $resetFrequencyPossibleValues = [
+    protected static array $resetFrequencyPossibleValues = [
         'every second',
         'every minute',
         'every hour',
@@ -34,7 +36,7 @@ class Limit extends Model implements LimitContract
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
-        
+
         $this->table = config('limit.tables.limits') ?: parent::getTable();
     }
 
@@ -75,12 +77,7 @@ class Limit extends Model implements LimitContract
             filled($data['reset_frequency']) &&
             array_search($data['reset_frequency'], static::$resetFrequencyPossibleValues) === false
         ) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    'Invalid "reset_frequency" value. Value of "reset_frequency" should be one the following: %s',
-                    implode(', ', static::$resetFrequencyPossibleValues)
-                )
-            );
+            throw new InvalidLimitResetFrequencyValue;
         }
 
         if (isset($data['plan']) && blank($data['plan'])) {
@@ -140,5 +137,10 @@ class Limit extends Model implements LimitContract
         }
 
         return $this->save();
+    }
+
+    public function getResetFrequencyOptions(): Collection
+    {
+        return collect(static::$resetFrequencyPossibleValues);
     }
 }
