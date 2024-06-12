@@ -41,7 +41,7 @@ class CommandTest extends TestCase
         $this
             ->artisan('limit:delete', ['name' => 'locations'])
             ->assertSuccessful()
-            ->expectsOutputToContain('No limits found to be deleted.');
+            ->expectsOutput('No limits found to be deleted.');
     }
 
     public function test_delete_limit_command_deletes_limit(): void
@@ -90,7 +90,7 @@ class CommandTest extends TestCase
         $this
             ->artisan('limit:list')
             ->assertSuccessful()
-            ->expectsOutputToContain('No limits available.');
+            ->expectsOutput('No limits available.');
     }
 
     public function test_reset_limit_usages_command_resets_usages_if_next_reset_is_due(): void
@@ -131,7 +131,7 @@ class CommandTest extends TestCase
 
         $this->assertEquals(3, $this->user->remainingLimit($limit));
 
-        $this->artisan('limit:reset')->assertSuccessful()->expectsOutputToContain('0 usages/rows');
+        $this->artisan('limit:reset')->assertSuccessful()->expectsOutput('0 usages/rows where resetted.');
 
         $this->assertEquals(3, $this->user->remainingLimit($limit));
     }

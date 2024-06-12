@@ -24,11 +24,12 @@
         "php": "^8.0",
         "illuminate/database": "^8.12|^9.0|^10.0|^11.0",
         "illuminate/support": "^8.12|^9.0|^10.0|^11.0",
-        "illuminate/console": "^8.12|^9.0|^10.0|^11.0"
+        "illuminate/console": "^8.12|^9.0|^10.0|^11.0",
+        "nesbot/carbon": "^2.67|^3.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^6.23|^7.0|^8.0|^9.0",
-        "phpunit/phpunit": "^9.0|^10.0"
+        "orchestra/testbench": "^6.41|^7.37|^8.18|^9.0",
+        "phpunit/phpunit": "^9.4|^10.1"
     },
     "config": {
         "sort-packages": true

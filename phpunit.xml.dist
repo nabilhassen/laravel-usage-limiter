@@ -7,7 +7,8 @@
   </testsuites>
   <php>
     <env name="APP_KEY" value="base64:W99w+5JYz8SVGf5sx17gmPR6uoNCtWiEVc+9qu8iGEg="/>
-    <env name="DB_CONNECTION" value="testing"/>
+    <server name="DB_CONNECTION" value="sqlite"/>
+    <server name="DB_DATABASE" value=":memory:"/>
     <env name="CACHE_DRIVER" value="array"/>
   </php>
 </phpunit>

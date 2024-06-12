@@ -31,7 +31,7 @@ class ListLimits extends Command
         $limits = app(Limit::class)::all($columns);
 
         if ($limits->isEmpty()) {
-            $this->alert('No limits available.');
+            $this->info('No limits available.');
             return;
         }
 

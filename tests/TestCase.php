@@ -3,10 +3,10 @@
 namespace NabilHassen\LaravelUsageLimiter\Tests;
 
 use Closure;
-use function Orchestra\Testbench\workbench_path;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithViews;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use NabilHassen\LaravelUsageLimiter\Contracts\Limit;
 use NabilHassen\LaravelUsageLimiter\ServiceProvider;
@@ -31,6 +31,10 @@ abstract class TestCase extends Testbench
         $this->user = User::factory()->create();
 
         View::addLocation(__DIR__ . '/../workbench/resources/views');
+
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations/');
+
+        $this->migrateCacheTable();
     }
 
     protected function getPackageProviders($app)
@@ -38,14 +42,6 @@ abstract class TestCase extends Testbench
         return [
             ServiceProvider::class,
         ];
-    }
-
-    protected function defineDatabaseMigrations()
-    {
-        $this->loadMigrationsFrom([
-            workbench_path('database/migrations'),
-            __DIR__ . '/../database/migrations',
-        ]);
     }
 
     protected function assertException(Closure $test, string $exception): void
@@ -71,5 +67,18 @@ abstract class TestCase extends Testbench
             $this->initQueryCounts + $expected,
             DB::getQueryLog()
         );
+    }
+
+    protected function migrateCacheTable(): void
+    {
+        if (!Schema::hasTable('cache')) {
+            Schema::create('cache', function ($table) {
+                $table->string('key')->unique();
+                $table->text('value');
+                $table->integer('expiration');
+            });
+
+            $this->artisan('migrate');
+        }
     }
 }

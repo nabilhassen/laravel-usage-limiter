@@ -4,6 +4,7 @@ namespace NabilHassen\LaravelUsageLimiter\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use NabilHassen\LaravelUsageLimiter\LimitManager;
 
 class DeleteLimit extends Command
@@ -41,7 +42,7 @@ class DeleteLimit extends Command
         }
 
         $this->info(
-            sprintf('%s %s were deleted successfully.', $limits, str('limit')->plural($limits))
+            sprintf('%s %s were deleted successfully.', $limits, Str::of('limit')->plural($limits))
         );
     }
 }
