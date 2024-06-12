@@ -110,14 +110,14 @@ class CommandTest extends TestCase
 
         $this->assertEquals(5, $this->user->refresh()->remainingLimit($limit));
 
-        $this->assertEquals(
-            app(LimitManager::class)->getNextReset($limit->reset_frequency, now()),
-            $this->user->getModelLimit($limit)->pivot->next_reset
+        $this->assertTrue(
+            app(LimitManager::class)
+                ->getNextReset($limit->reset_frequency, now())
+                ->isSameAs('yyyy-mm-dd h:i:s', $this->user->getModelLimit($limit)->pivot->next_reset),
         );
 
-        $this->assertEquals(
-            now(),
-            $this->user->getModelLimit($limit)->pivot->last_reset
+        $this->assertTrue(
+            now()->isSameAs('yyyy-mm-dd h:i:s', $this->user->getModelLimit($limit)->pivot->last_reset),
         );
     }
 

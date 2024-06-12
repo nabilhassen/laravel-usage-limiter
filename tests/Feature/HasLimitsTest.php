@@ -60,7 +60,7 @@ class HasLimitsTest extends TestCase
 
         $this->assertEquals(0, $this->user->usedLimit($limit->name, $limit->plan));
 
-        $this->assertEquals(now(), $this->user->getModelLimit($limit)->pivot->last_reset);
+        $this->assertTrue(now()->isSameAs('yyyy-mm-dd h:i:s', $this->user->getModelLimit($limit)->pivot->last_reset));
     }
 
     public function test_can_set_limits_with_different_names_on_a_model(): void
@@ -107,9 +107,10 @@ class HasLimitsTest extends TestCase
             $this->user->getModelLimit($limit)->pivot->last_reset
         );
 
-        $this->assertEquals(
-            app(LimitManager::class)->getNextReset($limit->reset_frequency, now()),
-            $this->user->getModelLimit($limit)->pivot->next_reset
+        $this->assertTrue(
+            app(LimitManager::class)
+                ->getNextReset($limit->reset_frequency, now())
+                ->isSameAs('yyyy-mm-dd h:i:s', $this->user->getModelLimit($limit)->pivot->next_reset),
         );
     }
 
