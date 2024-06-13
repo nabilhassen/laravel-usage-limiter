@@ -270,17 +270,6 @@ class HasLimitsTest extends TestCase
         );
     }
 
-    public function test_used_amount_is_always_greater_than_zero(): void
-    {
-        $limit = $this->createLimit();
-
-        $this->user->setLimit($limit->name, $limit->plan);
-
-        $this->assertFalse(
-            $this->user->ensureUsedAmountIsLessThanAllowedAmount($limit->name, $limit->plan, 0)
-        );
-    }
-
     public function test_used_amount_is_valid(): void
     {
         $limit = $this->createLimit();

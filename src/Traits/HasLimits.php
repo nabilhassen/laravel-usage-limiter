@@ -86,7 +86,7 @@ trait HasLimits
 
         $newUsedAmount = $limit->pivot->used_amount + $amount;
 
-        if (! $this->ensureUsedAmountIsLessThanAllowedAmount($name, $plan, $newUsedAmount)) {
+        if ($newUsedAmount <= 0 || ! $this->ensureUsedAmountIsLessThanAllowedAmount($name, $plan, $newUsedAmount)) {
             throw new UsedAmountShouldBePositiveIntAndLessThanAllowedAmount;
         }
 
@@ -105,7 +105,7 @@ trait HasLimits
 
         $newUsedAmount = $limit->pivot->used_amount - $amount;
 
-        if (! $this->ensureUsedAmountIsLessThanAllowedAmount($name, $plan, $newUsedAmount)) {
+        if ($newUsedAmount < 0 || ! $this->ensureUsedAmountIsLessThanAllowedAmount($name, $plan, $newUsedAmount)) {
             throw new UsedAmountShouldBePositiveIntAndLessThanAllowedAmount;
         }
 
@@ -144,7 +144,7 @@ trait HasLimits
     {
         $limit = $this->getModelLimit($name, $plan);
 
-        return $usedAmount > 0 && $usedAmount <= $limit->allowed_amount;
+        return $usedAmount <= $limit->allowed_amount;
     }
 
     public function usedLimit(string|LimitContract $name, ?string $plan = null): float
