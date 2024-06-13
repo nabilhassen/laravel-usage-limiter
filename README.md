@@ -89,10 +89,19 @@ $projectsStandardLimit->incrementBy(10);
 $projectsProLimit->decrementBy(3);
 ```
 
-###### Reset Frequency Column Possible Values
+###### Possible values for "reset_frequency" column
 
-| null | every second | every minute | every hour | every day | every week | every two weeks | every month | every quarter | every six months | every year |
-| ---- | ------------ | ------------ | ---------- | --------- | ---------- | --------------- | ----------- | ------------- | ---------------- | ---------- |
+- null
+- "every second"
+- "every minute"
+- "every hour"
+- "every day"
+- "every week",
+- "every two weeks",
+- "every month",
+- "every quarter",
+- "every six months",
+- "every year"
 
 #### Set Limits on models
 
