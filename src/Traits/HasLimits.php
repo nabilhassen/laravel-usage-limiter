@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use NabilHassen\LaravelUsageLimiter\Contracts\Limit as LimitContract;
 use NabilHassen\LaravelUsageLimiter\Exceptions\LimitNotSetOnModel;
+use NabilHassen\LaravelUsageLimiter\Exceptions\UsedAmountShouldBePositiveIntAndLessThanAllowedAmount;
 use NabilHassen\LaravelUsageLimiter\LimitManager;
 
 trait HasLimits
@@ -85,12 +86,8 @@ trait HasLimits
 
         $newUsedAmount = $limit->pivot->used_amount + $amount;
 
-        if (! $this->hasEnoughLimit($name, $plan)) {
-            return false;
-        }
-
         if (! $this->ensureUsedAmountIsLessThanAllowedAmount($name, $plan, $newUsedAmount)) {
-            return false;
+            throw new UsedAmountShouldBePositiveIntAndLessThanAllowedAmount;
         }
 
         $this->limitsRelationship()->updateExistingPivot($limit->id, [
@@ -109,7 +106,7 @@ trait HasLimits
         $newUsedAmount = $limit->pivot->used_amount - $amount;
 
         if (! $this->ensureUsedAmountIsLessThanAllowedAmount($name, $plan, $newUsedAmount)) {
-            return false;
+            throw new UsedAmountShouldBePositiveIntAndLessThanAllowedAmount;
         }
 
         $this->limitsRelationship()->updateExistingPivot($limit->id, [
@@ -147,7 +144,7 @@ trait HasLimits
     {
         $limit = $this->getModelLimit($name, $plan);
 
-        return $usedAmount >= 0 && $usedAmount <= $limit->allowed_amount;
+        return $usedAmount > 0 && $usedAmount <= $limit->allowed_amount;
     }
 
     public function usedLimit(string|LimitContract $name, ?string $plan = null): float

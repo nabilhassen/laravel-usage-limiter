@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 use NabilHassen\LaravelUsageLimiter\Exceptions\LimitNotSetOnModel;
+use NabilHassen\LaravelUsageLimiter\Exceptions\UsedAmountShouldBePositiveIntAndLessThanAllowedAmount;
 use NabilHassen\LaravelUsageLimiter\LimitManager;
 use NabilHassen\LaravelUsageLimiter\Tests\TestCase;
 
@@ -177,6 +178,18 @@ class HasLimitsTest extends TestCase
         $this->assertEquals(2.0, $this->user->remainingLimit($productLimit->name, $productLimit->plan));
     }
 
+    public function test_exception_is_thrown_if_model_consumes_unavailable_limits(): void
+    {
+        $limit = $this->createLimit();
+
+        $this->user->setLimit($limit->name, $limit->plan);
+
+        $this->assertException(
+            fn () => $this->user->useLimit($limit->name, $limit->plan, 6),
+            UsedAmountShouldBePositiveIntAndLessThanAllowedAmount::class
+        );
+    }
+
     public function test_model_can_unconsume_limit(): void
     {
         $limit = $this->createLimit();
@@ -194,6 +207,18 @@ class HasLimitsTest extends TestCase
         $this->assertEquals(1.0, $this->user->usedLimit($limit->name, $limit->plan));
 
         $this->assertEquals(4.0, $this->user->remainingLimit($limit->name, $limit->plan));
+    }
+
+    public function test_exception_is_thrown_if_model_unconsumes_below_zero(): void
+    {
+        $limit = $this->createLimit();
+
+        $this->user->setLimit($limit->name, $limit->plan);
+
+        $this->assertException(
+            fn () => $this->user->unuseLimit($limit->name, $limit->plan, 6),
+            UsedAmountShouldBePositiveIntAndLessThanAllowedAmount::class
+        );
     }
 
     public function test_model_can_reset_limit(): void
@@ -242,6 +267,17 @@ class HasLimitsTest extends TestCase
 
         $this->assertFalse(
             $this->user->ensureUsedAmountIsLessThanAllowedAmount($limit->name, $limit->plan, 6)
+        );
+    }
+
+    public function test_used_amount_is_always_greater_than_zero(): void
+    {
+        $limit = $this->createLimit();
+
+        $this->user->setLimit($limit->name, $limit->plan);
+
+        $this->assertFalse(
+            $this->user->ensureUsedAmountIsLessThanAllowedAmount($limit->name, $limit->plan, 0)
         );
     }
 
