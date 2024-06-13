@@ -178,6 +178,18 @@ class HasLimitsTest extends TestCase
         $this->assertEquals(2.0, $this->user->remainingLimit($productLimit->name, $productLimit->plan));
     }
 
+    public function test_exception_is_thrown_if_model_consumes_zero_limits(): void
+    {
+        $limit = $this->createLimit();
+
+        $this->user->setLimit($limit->name, $limit->plan);
+
+        $this->assertException(
+            fn () => $this->user->useLimit($limit->name, $limit->plan, 0),
+            UsedAmountShouldBePositiveIntAndLessThanAllowedAmount::class
+        );
+    }
+
     public function test_exception_is_thrown_if_model_consumes_unavailable_limits(): void
     {
         $limit = $this->createLimit();
