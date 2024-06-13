@@ -35,9 +35,9 @@ abstract class TestCase extends Testbench
 
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations/');
 
-        $this->migrateCacheTable();
+        $this->createCacheTable();
 
-        $this->migrateUsersTable();
+        $this->createUsersTable();
 
         $this->artisan('migrate');
     }
@@ -74,7 +74,7 @@ abstract class TestCase extends Testbench
         );
     }
 
-    protected function migrateCacheTable(): void
+    protected function createCacheTable(): void
     {
         if (! Schema::hasTable('cache')) {
             Schema::create('cache', function ($table) {
@@ -85,7 +85,7 @@ abstract class TestCase extends Testbench
         }
     }
 
-    protected static function migrateUsersTable(): void
+    protected static function createUsersTable(): void
     {
         if (! Schema::hasTable('users')) {
             Schema::create('users', function (Blueprint $table) {
