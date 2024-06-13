@@ -28,9 +28,11 @@ class ResetLimitUsages extends Command
      */
     public function handle(): void
     {
+        $limits = app(Limit::class)::whereNotNull('reset_frequency')->get(['id', 'reset_frequency']);
+
         $affectedRows = 0;
 
-        foreach (app(Limit::class)::all(['id', 'reset_frequency']) as $limit) {
+        foreach ($limits as $limit) {
             $affectedRows += DB::table(config('limit.tables.model_has_limits'))
                 ->where('used_amount', '>', 0)
                 ->where('next_reset', '<=', now())
