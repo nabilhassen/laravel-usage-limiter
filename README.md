@@ -75,18 +75,18 @@ $projectsStandardLimit = Limit::create([
 ]);
 
 # On pro plan 10 projects are allowed per month
-$projectsStandardLimit = Limit::create([
+$projectsProLimit = Limit::create([
     'name' => 'projects',
     'allowed_amount' => 10,
-    'plan' => 'standard', // optional
+    'plan' => 'pro', // optional
     'reset_frequency' => 'every month' // optional
 ]);
 
-# Increment projects limit on pro plan to 15 per month
-$projectsStandardLimit->incrementBy(5);
+# Increment projects limit on standard plan from 5 to 15 per month
+$projectsStandardLimit->incrementBy(10);
 
-# Decrement projects limit on standard plan to 10 per month
-$projectsStandardLimit->decrementBy(3);
+# Decrement projects limit on pro plan from 10 to 7 per month
+$projectsProLimit->decrementBy(3);
 ```
 
 ###### Reset Frequency Column Possible Values
