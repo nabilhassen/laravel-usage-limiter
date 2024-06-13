@@ -85,11 +85,11 @@ trait HasLimits
 
         $newUsedAmount = $limit->pivot->used_amount + $amount;
 
-        if (!$this->hasEnoughLimit($name, $plan)) {
+        if (! $this->hasEnoughLimit($name, $plan)) {
             return false;
         }
 
-        if (!$this->ensureUsedAmountIsLessThanAllowedAmount($name, $plan, $newUsedAmount)) {
+        if (! $this->ensureUsedAmountIsLessThanAllowedAmount($name, $plan, $newUsedAmount)) {
             return false;
         }
 
@@ -108,7 +108,7 @@ trait HasLimits
 
         $newUsedAmount = $limit->pivot->used_amount - $amount;
 
-        if (!$this->ensureUsedAmountIsLessThanAllowedAmount($name, $plan, $newUsedAmount)) {
+        if (! $this->ensureUsedAmountIsLessThanAllowedAmount($name, $plan, $newUsedAmount)) {
             return false;
         }
 
@@ -143,7 +143,7 @@ trait HasLimits
         return $limit->allowed_amount > $usedAmount;
     }
 
-    public function ensureUsedAmountIsLessThanAllowedAmount(string|LimitContract $name, ?string $plan = null, float|int $usedAmount): bool
+    public function ensureUsedAmountIsLessThanAllowedAmount(string|LimitContract $name, ?string $plan, float|int $usedAmount): bool
     {
         $limit = $this->getModelLimit($name, $plan);
 
@@ -165,12 +165,12 @@ trait HasLimits
     }
 
     public function getModelLimit(string|LimitContract $name, ?string $plan = null)
-    {        
+    {
         $limit = app(LimitContract::class)::findByName($name, $plan);
 
         $modelLimit = $this->getModelLimits()->firstWhere('id', $limit->id);
 
-        if (!$modelLimit) {
+        if (! $modelLimit) {
             throw new LimitNotSetOnModel($name);
         }
 
@@ -193,7 +193,7 @@ trait HasLimits
         return $this->$relationshipName();
     }
 
-    public function unloadLimitsRelationship() : void
+    public function unloadLimitsRelationship(): void
     {
         $relationshipName = static::getLimitsRelationship();
 
@@ -205,9 +205,9 @@ trait HasLimits
         return config('limit.relationship');
     }
 
-    public function limitUsageReport(string|LimitContract $name = null, ?string $plan = null): array
+    public function limitUsageReport(string|LimitContract|null $name = null, ?string $plan = null): array
     {
-        $modelLimits = !is_null($name) ? collect([$this->getModelLimit($name, $plan)]) : $this->getModelLimits();
+        $modelLimits = ! is_null($name) ? collect([$this->getModelLimit($name, $plan)]) : $this->getModelLimits();
 
         return
         $modelLimits

@@ -51,24 +51,24 @@ class Limit extends Model implements LimitContract
 
         $limit = app(LimitManager::class)->getLimit($data);
 
-        if ($limit && !$throw) {
-            return $limit;
+        if (! $limit) {
+            return static::query()->create($data);
         }
 
-        if ($limit && $throw) {
+        if ($throw) {
             throw new LimitAlreadyExists($data['name'], $data['plan'] ?? null);
         }
 
-        return static::query()->create($data);
+        return $limit;
     }
 
     protected static function validateArgs(array $data): array
     {
-        if (!Arr::has($data, ['name', 'allowed_amount'])) {
+        if (! Arr::has($data, ['name', 'allowed_amount'])) {
             throw new InvalidArgumentException('"name" and "allowed_amount" keys do not exist on the array.');
         }
 
-        if (!is_numeric($data['allowed_amount']) || $data['allowed_amount'] < 0) {
+        if (! is_numeric($data['allowed_amount']) || $data['allowed_amount'] < 0) {
             throw new InvalidArgumentException('"allowed_amount" should be a float|int type and greater than or equal to 0.');
         }
 
@@ -95,7 +95,7 @@ class Limit extends Model implements LimitContract
 
         $limit = app(LimitManager::class)->getLimit(compact('name', 'plan'));
 
-        if (!$limit) {
+        if (! $limit) {
             throw new LimitDoesNotExist($name, $plan);
         }
 
@@ -110,7 +110,7 @@ class Limit extends Model implements LimitContract
 
         $limit = app(LimitManager::class)->getLimit(compact('id'));
 
-        if (!$limit) {
+        if (! $limit) {
             throw new LimitDoesNotExist($id);
         }
 

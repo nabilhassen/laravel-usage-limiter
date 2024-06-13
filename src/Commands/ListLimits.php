@@ -32,6 +32,7 @@ class ListLimits extends Command
 
         if ($limits->isEmpty()) {
             $this->info('No limits available.');
+
             return;
         }
 

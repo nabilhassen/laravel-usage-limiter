@@ -56,7 +56,7 @@ return [
     'cache' => [
 
         /*
-         * By default all limits are cached for 24 hours to speed up performance. When 
+         * By default all limits are cached for 24 hours to speed up performance. When
          * limits are created/updated/deleted the cache is flushed automatically.
          */
 

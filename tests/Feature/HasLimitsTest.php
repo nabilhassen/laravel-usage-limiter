@@ -36,7 +36,7 @@ class HasLimitsTest extends TestCase
         $limit = $this->createLimit();
 
         $this->assertException(
-            fn() => $this->user->setLimit($limit->name, $limit->plan, usedAmount: 6),
+            fn () => $this->user->setLimit($limit->name, $limit->plan, usedAmount: 6),
             InvalidArgumentException::class
         );
     }
@@ -138,7 +138,7 @@ class HasLimitsTest extends TestCase
 
         $this->user->unsetLimit($limit->name, $limit->plan);
 
-        $this->assertTrue(!$this->user->isLimitSet($limit->name, $limit->plan));
+        $this->assertTrue(! $this->user->isLimitSet($limit->name, $limit->plan));
     }
 
     public function test_model_can_consume_limit(): void
@@ -272,7 +272,7 @@ class HasLimitsTest extends TestCase
         $limit = $this->createLimit();
 
         $this->assertException(
-            fn() => $this->user->getModelLimit($limit->name, $limit->plan),
+            fn () => $this->user->getModelLimit($limit->name, $limit->plan),
             LimitNotSetOnModel::class
         );
     }

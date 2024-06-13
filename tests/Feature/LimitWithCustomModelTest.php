@@ -3,7 +3,6 @@
 namespace NabilHassen\LaravelUsageLimiter\Tests\Feature;
 
 use Illuminate\Contracts\Config\Repository;
-use NabilHassen\LaravelUsageLimiter\Tests\Feature\LimitTest;
 use Workbench\App\Models\Restrict;
 
 class LimitWithCustomModelTest extends LimitTest

@@ -3,6 +3,7 @@
 namespace NabilHassen\LaravelUsageLimiter\Tests;
 
 use Closure;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\Concerns\InteractsWithViews;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +17,7 @@ use Workbench\App\Models\User;
 
 abstract class TestCase extends Testbench
 {
-    use RefreshDatabase, WithWorkbench, InteractsWithViews;
+    use InteractsWithViews, RefreshDatabase, WithWorkbench;
 
     protected User $user;
 
@@ -30,9 +31,9 @@ abstract class TestCase extends Testbench
 
         $this->user = User::factory()->create();
 
-        View::addLocation(__DIR__ . '/../workbench/resources/views');
+        View::addLocation(__DIR__.'/../workbench/resources/views');
 
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations/');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations/');
 
         $this->migrateCacheTable();
 
@@ -55,7 +56,7 @@ abstract class TestCase extends Testbench
         $test();
     }
 
-    protected function createLimit(string $name = 'locations', ?string $plan = 'standard', float | int $allowedAmount = 5.0, ?string $resetFrequency = 'every month'): Limit
+    protected function createLimit(string $name = 'locations', ?string $plan = 'standard', float|int $allowedAmount = 5.0, ?string $resetFrequency = 'every month'): Limit
     {
         return app(Limit::class)::findOrCreate([
             'name' => $name,
@@ -75,7 +76,7 @@ abstract class TestCase extends Testbench
 
     protected function migrateCacheTable(): void
     {
-        if (!Schema::hasTable('cache')) {
+        if (! Schema::hasTable('cache')) {
             Schema::create('cache', function ($table) {
                 $table->string('key')->unique();
                 $table->text('value');
@@ -86,7 +87,7 @@ abstract class TestCase extends Testbench
 
     protected static function migrateUsersTable(): void
     {
-        if (!Schema::hasTable('users')) {
+        if (! Schema::hasTable('users')) {
             Schema::create('users', function (Blueprint $table) {
                 $table->id();
                 $table->string('name');

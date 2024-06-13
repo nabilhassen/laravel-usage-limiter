@@ -21,7 +21,7 @@ class LimitTest extends TestCase
         ];
 
         $this->assertException(
-            fn() => app(LimitContract::class)::findOrCreate($data),
+            fn () => app(LimitContract::class)::findOrCreate($data),
             InvalidArgumentException::class
         );
     }
@@ -34,7 +34,7 @@ class LimitTest extends TestCase
         ];
 
         $this->assertException(
-            fn() => app(LimitContract::class)::findOrCreate($data),
+            fn () => app(LimitContract::class)::findOrCreate($data),
             InvalidArgumentException::class
         );
     }
@@ -48,7 +48,7 @@ class LimitTest extends TestCase
         ];
 
         $this->assertException(
-            fn() => app(LimitContract::class)::findOrCreate($data),
+            fn () => app(LimitContract::class)::findOrCreate($data),
             InvalidArgumentException::class
         );
     }
@@ -62,7 +62,7 @@ class LimitTest extends TestCase
         ];
 
         $this->assertException(
-            fn() => app(LimitContract::class)::findOrCreate($data),
+            fn () => app(LimitContract::class)::findOrCreate($data),
             InvalidArgumentException::class
         );
     }
@@ -78,7 +78,7 @@ class LimitTest extends TestCase
         app(LimitContract::class)::create($data);
 
         $this->assertException(
-            fn() => app(LimitContract::class)::create($data),
+            fn () => app(LimitContract::class)::create($data),
             LimitAlreadyExists::class
         );
     }
@@ -93,7 +93,7 @@ class LimitTest extends TestCase
         ];
 
         $this->assertException(
-            fn() => app(LimitContract::class)::create($data),
+            fn () => app(LimitContract::class)::create($data),
             InvalidLimitResetFrequencyValue::class
         );
     }
@@ -224,7 +224,7 @@ class LimitTest extends TestCase
     public function test_exception_is_thrown_if_limit_does_not_exist(): void
     {
         $this->assertException(
-            fn() => app(LimitContract::class)::findByName(Str::random(), Str::random()),
+            fn () => app(LimitContract::class)::findByName(Str::random(), Str::random()),
             LimitDoesNotExist::class
         );
     }
@@ -317,7 +317,7 @@ class LimitTest extends TestCase
         ];
 
         $this->assertException(
-            fn() => app(LimitContract::class)::findById(1),
+            fn () => app(LimitContract::class)::findById(1),
             LimitDoesNotExist::class
         );
     }
@@ -349,7 +349,7 @@ class LimitTest extends TestCase
         $limit = app(LimitContract::class)::findOrCreate($data);
 
         $this->assertException(
-            fn() => $limit->incrementBy(0.0),
+            fn () => $limit->incrementBy(0.0),
             InvalidArgumentException::class
         );
     }
@@ -383,7 +383,7 @@ class LimitTest extends TestCase
         $limit = app(LimitContract::class)::findOrCreate($data);
 
         $this->assertException(
-            fn() => $limit->decrementBy(6.0),
+            fn () => $limit->decrementBy(6.0),
             InvalidArgumentException::class
         );
     }

@@ -2,7 +2,6 @@
 
 namespace NabilHassen\LaravelUsageLimiter;
 
-use DateInterval;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -42,10 +41,11 @@ class LimitManager
 
         if ($cacheStore === 'default') {
             $this->cache = Cache::store();
+
             return;
         }
 
-        if (!array_key_exists($cacheStore, config('cache.stores'))) {
+        if (! array_key_exists($cacheStore, config('cache.stores'))) {
             $cacheStore = 'array';
         }
 
@@ -112,8 +112,8 @@ class LimitManager
             ->where('name', $name)
             ->when(
                 filled($plan),
-                fn($q) => $q->where('plan', $plan),
-                fn($q) => $q->whereNull('plan')
+                fn ($q) => $q->where('plan', $plan),
+                fn ($q) => $q->whereNull('plan')
             )
             ->first();
     }

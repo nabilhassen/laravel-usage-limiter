@@ -40,12 +40,12 @@ class LimitManagerTest extends TestCase
         $limit = $this->createLimit();
 
         $this->assertException(
-            fn() => $this->limitManagerClass->getLimit([]),
+            fn () => $this->limitManagerClass->getLimit([]),
             InvalidArgumentException::class
         );
 
         $this->assertException(
-            fn() => $this->limitManagerClass->getLimit([
+            fn () => $this->limitManagerClass->getLimit([
                 'plan' => $limit->plan,
             ]),
             InvalidArgumentException::class
@@ -105,7 +105,7 @@ class LimitManagerTest extends TestCase
     public function test_exception_is_thrown_if_invalid_reset_frequency_is_passed_to_get_next_reset(): void
     {
         $this->assertException(
-            fn() => $this->limitManagerClass->getNextReset(Str::random(), now()),
+            fn () => $this->limitManagerClass->getNextReset(Str::random(), now()),
             InvalidLimitResetFrequencyValue::class
         );
     }

@@ -36,8 +36,9 @@ class DeleteLimit extends Command
             )
             ?->delete();
 
-        if (!$limits) {
+        if (! $limits) {
             $this->info('No limits found to be deleted.');
+
             return;
         }
 
