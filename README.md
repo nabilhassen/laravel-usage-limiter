@@ -92,7 +92,7 @@ $projectsProLimit->decrementBy(3);
 ###### Possible values for "reset_frequency" column
 
 - null
-- "every second"
+- "every second" // works in Laravel >= 10
 - "every minute"
 - "every hour"
 - "every day"
@@ -155,18 +155,18 @@ $user->resetLimit($projectsStandardLimit);
 
 #### All available methods
 
-| Method           | Return Type | Parameters                                                                                 |
-| ---------------- | ----------- | ------------------------------------------------------------------------------------------ |
-| setLimit         | bool        | string\|LimitContract $limit, <br> ?string $plan = null, <br> float\|int $usedAmount = 0.0 |
-| unsetLimit       | bool        | string\|LimitContract $limit, <br> ?string $plan = null                                    |
-| isLimitSet       | bool        | string\|LimitContract $limit, <br> ?string $plan = null                                    |
-| useLimit         | bool        | string\|LimitContract $limit, <br> ?string $plan = null, <br> float\|int $amount = 1.0     |
-| unuseLimit       | bool        | string\|LimitContract $limit, <br> ?string $plan = null, <br> float\|int $amount = 1.0     |
-| resetLimit       | bool        | string\|LimitContract $limit, <br> ?string $plan = null                                    |
-| hasEnoughLimit   | bool        | string\|LimitContract $limit, <br> ?string $plan = null                                    |
-| usedLimit        | float       | string\|LimitContract $limit, <br> ?string $plan = null                                    |
-| remainingLimit   | float       | string\|LimitContract $limit, <br> ?string $plan = null                                    |
-| limitUsageReport | array       | string\|LimitContract\|null $limit = null, <br> ?string $plan = null                       |
+| Method           | Return Type | Parameters                                                                         |
+| ---------------- | ----------- | ---------------------------------------------------------------------------------- |
+| setLimit         | bool        | string\|Limit $limit, <br> ?string $plan = null, <br> float\|int $usedAmount = 0.0 |
+| unsetLimit       | bool        | string\|Limit $limit, <br> ?string $plan = null                                    |
+| isLimitSet       | bool        | string\|Limit $limit, <br> ?string $plan = null                                    |
+| useLimit         | bool        | string\|Limit $limit, <br> ?string $plan = null, <br> float\|int $amount = 1.0     |
+| unuseLimit       | bool        | string\|Limit $limit, <br> ?string $plan = null, <br> float\|int $amount = 1.0     |
+| resetLimit       | bool        | string\|Limit $limit, <br> ?string $plan = null                                    |
+| hasEnoughLimit   | bool        | string\|Limit $limit, <br> ?string $plan = null                                    |
+| usedLimit        | float       | string\|Limit $limit, <br> ?string $plan = null                                    |
+| remainingLimit   | float       | string\|Limit $limit, <br> ?string $plan = null                                    |
+| limitUsageReport | array       | string\|Limit\|null $limit = null, <br> ?string $plan = null                       |
 
 #### All available commands
 
@@ -207,10 +207,10 @@ Add `limit:reset` command to the console kernel.
 protected function schedule(Schedule $schedule)
 {
     ...
-    // Laravel 8 & 9
+    // Laravel < 10
     $schedule->command('limit:reset')->everyMinute();
 
-    // Laravel 10 & 11
+    // Laravel >= 10
     $schedule->command('limit:reset')->everySecond();
     ...
 }

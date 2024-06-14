@@ -161,7 +161,7 @@ trait HasLimits
         return $limit->allowed_amount - $limit->pivot->used_amount;
     }
 
-    public function getModelLimit(string|LimitContract $name, ?string $plan = null)
+    public function getModelLimit(string|LimitContract $name, ?string $plan = null): LimitContract
     {
         $limit = app(LimitContract::class)::findByName($name, $plan);
 
