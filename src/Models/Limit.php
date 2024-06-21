@@ -25,19 +25,6 @@ class Limit extends Model implements LimitContract
         'reset_frequency' => FrequencyEnum::class,
     ];
 
-    // protected static array $resetFrequencyPossibleValues = [
-    //     'every second',
-    //     'every minute',
-    //     'every hour',
-    //     'every day',
-    //     'every week',
-    //     'every two weeks',
-    //     'every month',
-    //     'every quarter',
-    //     'every six months',
-    //     'every year',
-    // ];
-
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
