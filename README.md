@@ -4,7 +4,7 @@
 
 ## Introduction
 
-A Laravel package to track, limit & restrict usages by setting them on your models (usually User model).
+A Laravel package to track, limit, & restrict usages of users, accounts, or any other model.
 
 ## Features
 
@@ -25,6 +25,7 @@ Basically with this package you can track your users' or any other models' usage
 
 - API usages per second, minute, month, etc
 - Resource creation. E.g: projects, teams, users, products, etc
+- Resource usages. E.g: storage, etc
 
 ## Versions
 
@@ -57,7 +58,7 @@ First, you need to use the **HasLimits** trait on your model.
 ```php
 use NabilHassen\LaravelUsageLimiter\Traits\HasLimits;
 
-class User extends Authenticable
+class User extends Authenticatable
 {
     use HasLimits;
 }
@@ -146,6 +147,8 @@ $user->unuseLimit('projects', 'standard', 3); OR
 $user->unuseLimit($projectsStandardLimit, amount: 3);
 ```
 
+> ###### _Both useLimit and unuseLimit methods throws an exception if a user exceeded limits or tried to unuse limits below 0_.
+
 #### Reset Limits for models
 
 ```php
@@ -157,11 +160,11 @@ $user->resetLimit($projectsStandardLimit);
 
 | Method           | Return Type | Parameters                                                                         |
 | ---------------- | ----------- | ---------------------------------------------------------------------------------- |
-| setLimit         | bool        | string\|Limit $limit, <br> ?string $plan = null, <br> float\|int $usedAmount = 0.0 |
+| setLimit         | true\|throw | string\|Limit $limit, <br> ?string $plan = null, <br> float\|int $usedAmount = 0.0 |
 | unsetLimit       | bool        | string\|Limit $limit, <br> ?string $plan = null                                    |
 | isLimitSet       | bool        | string\|Limit $limit, <br> ?string $plan = null                                    |
-| useLimit         | bool        | string\|Limit $limit, <br> ?string $plan = null, <br> float\|int $amount = 1.0     |
-| unuseLimit       | bool        | string\|Limit $limit, <br> ?string $plan = null, <br> float\|int $amount = 1.0     |
+| useLimit         | true\|throw | string\|Limit $limit, <br> ?string $plan = null, <br> float\|int $amount = 1.0     |
+| unuseLimit       | true\|throw | string\|Limit $limit, <br> ?string $plan = null, <br> float\|int $amount = 1.0     |
 | resetLimit       | bool        | string\|Limit $limit, <br> ?string $plan = null                                    |
 | hasEnoughLimit   | bool        | string\|Limit $limit, <br> ?string $plan = null                                    |
 | usedLimit        | float       | string\|Limit $limit, <br> ?string $plan = null                                    |
