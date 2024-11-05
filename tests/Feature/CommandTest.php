@@ -19,7 +19,7 @@ class CommandTest extends TestCase
         $this->artisan('limit:create', $data)->assertSuccessful();
 
         $this->assertDatabaseCount(app(Limit::class), 1);
-        $this->assertDatabaseHas(app(Limit::class), $data);
+        $this->assertDatabaseHas(config('limit.tables.limits'), $data);
     }
 
     public function test_create_limit_command_creates_limit_with_plan(): void
@@ -33,7 +33,7 @@ class CommandTest extends TestCase
         $this->artisan('limit:create', $data)->assertSuccessful();
 
         $this->assertDatabaseCount(app(Limit::class), 1);
-        $this->assertDatabaseHas(app(Limit::class), $data);
+        $this->assertDatabaseHas(config('limit.tables.limits'), $data);
     }
 
     public function test_delete_limit_command_did_not_found_limits_to_delete(): void
