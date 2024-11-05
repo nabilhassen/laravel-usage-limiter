@@ -31,6 +31,11 @@ Basically with this package you can track your users' or any other models' usage
 
 Compatible for **_Laravel versions >= 8.0_**.
 
+## Quick Tutorial
+
+This README documentation serves more as a reference. 
+For a step-by-step getting started tutorial check https://nabilhassen.com/laravel-usage-limiter-manage-rate-and-usage-limits and you can always refer to this README documentation for details and advanced stuff.
+
 ## Installation
 
 Install Laravel Usage Limiter using the Composer package manager:
@@ -259,7 +264,7 @@ composer test
 
 ## Security
 
-If you have found any security issues, please send an email to the author at nabil.hassen08@gmail.com.
+If you have found any security issues, please send an email to the author at hello@nabilhassen.com.
 
 ## Contributing
 
