@@ -29,7 +29,7 @@ Basically with this package you can track your users' or any other models' usage
 
 ## Versions
 
-Compatible for **_Laravel versions >= 8.0_**.
+Compatible for **_Laravel versions >= 12.0_**.
 
 ## Quick Tutorial
 

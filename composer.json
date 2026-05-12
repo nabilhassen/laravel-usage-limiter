@@ -1,71 +1,66 @@
 {
-    "name": "nabilhassen/laravel-usage-limiter",
-    "description": "A laravel package to manage and limit usages/seats by plan, users, or other models",
-    "keywords": [
-        "laravel",
-        "track usage",
-        "limit usage",
-        "restrict usage",
-        "api usage",
-        "resource usage",
-        "limit account",
-        "plan limits",
-        "per usage"
-    ],
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Nabil Hassen",
-            "email": "nabil.hassen08@gmail.com"
-        }
-    ],
-    "homepage": "https://github.com/nabilhassen/laravel-usage-limiter",
-    "require": {
-        "php": "^8.0",
-        "illuminate/database": "^8.0|^9.0|^10.0|^11.0|^12.0",
-        "illuminate/support": "^8.0|^9.0|^10.0|^11.0|^12.0",
-        "illuminate/console": "^8.0|^9.0|^10.0|^11.0|^12.0",
-        "nesbot/carbon": "^2.67|^3.0"
-    },
-    "require-dev": {
-        "laravel/pint": "^1.5",
-        "orchestra/testbench": "^6.41|^7.37|^8.18|^9.0",
-        "phpunit/phpunit": "^9.4|^10.1"
-    },
-    "config": {
-        "sort-packages": true
-    },
-    "autoload": {
-        "psr-4": {
-            "NabilHassen\\LaravelUsageLimiter\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "NabilHassen\\LaravelUsageLimiter\\Tests\\": "tests/",
-            "Workbench\\App\\": "workbench/app/",
-            "Workbench\\Database\\Factories\\": "workbench/database/factories/"
-        }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "NabilHassen\\LaravelUsageLimiter\\ServiceProvider"
-            ]
-        }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "scripts": {
-        "post-autoload-dump": [
-            "@prepare"
-        ],
-        "prepare": "@php vendor/bin/testbench package:discover --ansi",
-        "lint": [
-            "@php vendor/bin/phpstan analyse"
-        ],
-        "test": [
-            "@php vendor/bin/phpunit"
-        ]
-    }
+	"name": "nabilhassen/laravel-usage-limiter",
+	"description": "A laravel package to manage and limit usages/seats by plan, users, or other models",
+	"keywords": [
+		"laravel",
+		"track usage",
+		"limit usage",
+		"restrict usage",
+		"api usage",
+		"resource usage",
+		"limit account",
+		"plan limits",
+		"per usage"
+	],
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Nabil Hassen",
+			"email": "nabil.hassen08@gmail.com"
+		}
+	],
+	"homepage": "https://github.com/nabilhassen/laravel-usage-limiter",
+	"require": {
+		"php": "^8.3",
+		"illuminate/database": "^12.0|^13.0",
+		"illuminate/support": "^12.0|^13.0",
+		"illuminate/console": "^12.0|^13.0"
+	},
+	"require-dev": {
+		"orchestra/testbench": "^10.0|^11.0",
+		"phpunit/phpunit": "^11.0|^12.0"
+	},
+	"config": {
+		"sort-packages": true
+	},
+	"autoload": {
+		"psr-4": {
+			"NabilHassen\\LaravelUsageLimiter\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"NabilHassen\\LaravelUsageLimiter\\Tests\\": "tests/",
+			"Workbench\\App\\": "workbench/app/",
+			"Workbench\\Database\\Factories\\": "workbench/database/factories/"
+		}
+	},
+	"extra": {
+		"laravel": {
+			"providers": [
+				"NabilHassen\\LaravelUsageLimiter\\ServiceProvider"
+			]
+		}
+	},
+	"minimum-stability": "dev",
+	"prefer-stable": true,
+	"scripts": {
+		"post-autoload-dump": [
+			"@prepare"
+		],
+		"prepare": "@php vendor/bin/testbench package:discover --ansi",
+		"test": [
+			"@php vendor/bin/phpunit"
+		]
+	}
 }
